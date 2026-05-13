@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>🌱 Farmer Helper</title>
+</head>
+
+<body style="font-family: Arial; max-width: 600px; margin: auto;">
+
+<h2>🌱 Farmer Helper Chat</h2>
+
+<input id="msg" placeholder="Ask about your crop..." style="width: 80%; padding: 10px;" />
+<button onclick="send()">Send</button>
+
+<pre id="chat" style="margin-top: 20px; background: #f4f4f4; padding: 10px;"></pre>
+
+<script>
+async function send() {
+    let text = document.getElementById("msg").value;
+
+    document.getElementById("chat").innerHTML += "\nYou: " + text;
+
+    let res = await fetch("http://127.0.0.1:8000/ask", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({text})
+    });
+
+    let data = await res.json();
+
+    document.getElementById("chat").innerHTML += "\nAI: " + data.answer + "\n";
+}
+</script>
+
+</body>
+</html>
