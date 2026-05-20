@@ -15,25 +15,27 @@ app.add_middleware(
 
 class Question(BaseModel):
     text: str
+    mode: str = "general"
 
-# @app.get("/")
-# def home():
-#     return {"message": "🌱 Farmer Helper API is running"}
 
 @app.post("/ask")
 def ask_farm(question: Question):
     user_text = question.text
+    mode = getattr(question, "mode", "general")
 
     prompt = f"""
-You are a helpful assistant.
+You are a farming expert.
 
-You can talk about general topics and also help with farming.
+Mode: {mode}
 
-If the user asks about farming (crops, soil, pests), give agricultural advice.
-If not, respond normally like a friendly assistant.
+If mode is:
+- crop → focus on crop health
+- pest → focus on insects/disease
+- soil → soil advice
+- water → irrigation advice
+- general → general farming help
 
-
-User message:
+User question:
 {user_text}
 """
 
@@ -48,13 +50,4 @@ User message:
 
     data = response.json()
 
-    # 🔥 DEBUG (IMPORTANT)
-    print("OLLAMA RAW:", data)
-
-    # SAFE extraction
-    answer = data["response"]
-
-    if not answer:
-        return {"answer": "AI did not return response"}
-
-    return {"answer": answer}
+    return {"answer": data.get("response", "No response")}
