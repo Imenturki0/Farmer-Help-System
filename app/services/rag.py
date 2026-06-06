@@ -1,61 +1,85 @@
 from sentence_transformers import SentenceTransformer
 import faiss
 import numpy as np
+import json
 import os
 
 
 class FAISSRAG:
 
-    def __init__(self, model_name="all-MiniLM-L6-v2"):
+    def __init__(self, model_name="BAAI/bge-base-en-v1.5"):
         self.model = SentenceTransformer(model_name)
         self.docs = []
+        self.metadata = []
         self.index = None
+        emb = self.model.encode(["hello world"])
+
+        print(emb.shape)
 
     def load_docs(self, path: str):
         with open(path, "r", encoding="utf-8") as f:
-            self.docs = [line.strip() for line in f.readlines()]
+            data = json.load(f)
 
-    def build_index(self, index_path="faiss.index"):
-    
-        # 🟢 IF INDEX EXISTS → LOAD IT
+        self.docs = [item["text"] for item in data]
+        self.metadata = data
+
+        print(f"Loaded {len(self.docs)} clean chunks")
+
+    def build_index(self, index_path="vector_db/faiss.index"):
+
         if os.path.exists(index_path):
             self.index = faiss.read_index(index_path)
             print("Loaded FAISS index from disk")
             return
 
-        # 🔴 ELSE → BUILD IT
+        print("Creating embeddings...")
+
         embeddings = self.model.encode(
             self.docs,
-            normalize_embeddings=True
+            normalize_embeddings=True,
+            show_progress_bar=True
         )
 
         embeddings = np.array(embeddings).astype("float32")
 
-        dimension = embeddings.shape[1]
-        self.index = faiss.IndexFlatIP(dimension)
+        dim = embeddings.shape[1]
+        self.index = faiss.IndexFlatIP(dim)
         self.index.add(embeddings)
 
-        # 💾 SAVE IT
+        os.makedirs("vector_db", exist_ok=True)
         faiss.write_index(self.index, index_path)
 
         print("Built and saved FAISS index")
 
+    def search(self, query, k=5, threshold=0.45):  # 🔥 FIXED THRESHOLD
 
-
-    def search(self, query, k=5, threshold=0.3):
         q_vec = self.model.encode([query], normalize_embeddings=True)
         q_vec = np.array(q_vec).astype("float32")
 
         scores, indices = self.index.search(q_vec, k)
 
         results = []
-        for i, score in zip(indices[0], scores[0]):
-            if i != -1 and score > threshold:
-                results.append(self.docs[i])
+        best_score = 0.0
 
-        return results
-    
+        for idx, score in zip(indices[0], scores[0]):
+
+            if idx == -1:
+                continue
+
+            score = float(score)
+            best_score = max(best_score, score)
+
+            # 🔥 stricter filtering
+            if score < threshold:
+                continue
+
+            results.append({
+                "text": self.docs[idx],
+                "source": self.metadata[idx]["source"],
+                "score": score
+            })
+
+        return results, best_score
 
 
-# GLOBAL INSTANCE (SAFE NOW)
 rag = FAISSRAG()

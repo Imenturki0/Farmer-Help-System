@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.schemas import Question
-from app.services.orchestrator import handle_question
+from app.core.orchestrator import handle_question
 from app.services.rag import rag
 
 app = FastAPI()
@@ -26,12 +26,14 @@ logger = logging.getLogger("farm-ai")
 
 # -------------------------
 # STARTUP EVENT (IMPORTANT)
+# Instead of rebuilding embeddings every request.
 # -------------------------
+
 @app.on_event("startup")
 def startup():
     logger.info("Loading RAG model...")
 
-    rag.load_docs("data/processed/farming_docs.txt")
+    rag.load_docs("data/processed/chunks.json")
     rag.build_index()
 
     logger.info("RAG ready ✔")
