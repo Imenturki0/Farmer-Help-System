@@ -16,8 +16,25 @@ def format_context(results):
 # -------------------------
 # RAG USAGE DECISION
 # -------------------------
-def should_use_rag(best_score: float) -> bool:
-    return best_score >= 0.55
+def should_use_rag(results):
+    """
+    Decide based on reranker confidence distribution,
+    not a fake fixed threshold.
+    """
+
+    if not results:
+        return False
+
+    scores = [r.get("rerank_score", -999) for r in results]
+
+    # best match quality
+    best = max(scores)
+
+    # if model is totally unsure
+    if best < -3.0:
+        return False
+
+    return True
 
 
 # -------------------------
@@ -30,21 +47,23 @@ def handle_question(question):
     # -------------------------
     # 1. RAG SEARCH
     # -------------------------
-    rag_results, best_score = rag.search(text, k=3)
+    rag_results, _ = rag.search(text, k=20, final_k=3)
 
-    use_rag = should_use_rag(best_score)
+    use_rag = should_use_rag(rag_results)
 
     print("\n" + "=" * 50)
     print("QUESTION:", text)
-    print(f"BEST SCORE: {best_score:.3f}")
+    if rag_results:
+            print(f"BEST RERANK SCORE: {rag_results[0]['rerank_score']:.3f}")
 
     if use_rag:
         print("✅ RAG USED")
         context = format_context(rag_results)
 
         for i, r in enumerate(rag_results, 1):
-            print(f"\nChunk {i} | Score: {r['score']:.3f}")
-            print(r["text"][:200])
+            score = r.get("rerank_score", 0.0)
+            print(f"\nChunk {i} | Score: {score:.3f}")
+            print(r["text"])
 
     else:
         print("❌ RAG SKIPPED")

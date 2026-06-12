@@ -1,4 +1,4 @@
-from sentence_transformers import SentenceTransformer
+from sentence_transformers import SentenceTransformer,CrossEncoder
 import faiss
 import numpy as np
 import json
@@ -9,12 +9,16 @@ class FAISSRAG:
 
     def __init__(self, model_name="BAAI/bge-base-en-v1.5"):
         self.model = SentenceTransformer(model_name)
+
+          # 🔥 RERANKER ADDED
+        self.reranker = CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+
         self.docs = []
         self.metadata = []
         self.index = None
-        emb = self.model.encode(["hello world"])
 
-        print(emb.shape)
+        emb = self.model.encode(["hello world"])
+        print("Embedding shape:", emb.shape)
 
     def load_docs(self, path: str):
         with open(path, "r", encoding="utf-8") as f:
@@ -51,35 +55,58 @@ class FAISSRAG:
 
         print("Built and saved FAISS index")
 
-    def search(self, query, k=5, threshold=0.45):  # 🔥 FIXED THRESHOLD
-
+    def search(self, query, k=15, final_k=3):  
+        # -------------------------
+        # 1. FAISS retrieval (FAST)
+        # -------------------------
         q_vec = self.model.encode([query], normalize_embeddings=True)
         q_vec = np.array(q_vec).astype("float32")
 
         scores, indices = self.index.search(q_vec, k)
 
-        results = []
-        best_score = 0.0
+        candidates = []
 
         for idx, score in zip(indices[0], scores[0]):
 
             if idx == -1:
                 continue
 
-            score = float(score)
-            best_score = max(best_score, score)
-
-            # 🔥 stricter filtering
-            if score < threshold:
-                continue
-
-            results.append({
+            candidates.append({
                 "text": self.docs[idx],
                 "source": self.metadata[idx]["source"],
-                "score": score
+                "faiss_score": float(score)
             })
 
-        return results, best_score
+
+        if not candidates:
+            return [],0.0
+        
+        # -------------------------
+        # 2. RERANKING (ACCURACY)
+        # -------------------------
+        
+        pairs = [(query, c["text"]) for c in candidates]
+        rerank_scores = self.reranker.predict(pairs)
+
+         # attach rerank score
+        for i in range(len(candidates)):
+            candidates[i]["rerank_score"] = float(rerank_scores[i])
+
+        # sort by reranker (IMPORTANT)
+        candidates = sorted(
+            candidates,
+            key=lambda x: x["rerank_score"],
+            reverse=True
+        )
+
+         # -------------------------
+        # 3. FINAL FILTER
+        # -------------------------
+        top_results = candidates[:final_k]
+
+        best_score = top_results[0]["rerank_score"]
+
+        return top_results, best_score
 
 
 rag = FAISSRAG()
