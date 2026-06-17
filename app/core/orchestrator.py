@@ -1,7 +1,7 @@
 from app.services.weather import get_weather
 from app.services.rag import rag
 from app.services.llm import generate_answer
-
+import json
 
 # -------------------------
 # FORMAT CONTEXT
@@ -17,25 +17,33 @@ def format_context(results):
 # RAG USAGE DECISION
 # -------------------------
 def should_use_rag(results):
-    """
-    Decide based on reranker confidence distribution,
-    not a fake fixed threshold.
-    """
-
     if not results:
         return False
 
-    scores = [r.get("rerank_score", -999) for r in results]
+    scores = [r["rerank_score"] for r in results]
 
-    # best match quality
-    best = max(scores)
+    best = scores[0]
 
-    # if model is totally unsure
-    if best < -3.0:
+    # 1. absolute failure case
+    if best < 0.2:
+        return False
+
+    # 2. average quality check
+    avg = sum(scores) / len(scores)
+    if avg < 0.15:
+        return False
+
+    # 3. variance check (important)
+    # if everything is flat AND low → bad retrieval
+    import numpy as np
+    if np.std(scores) < 0.02 and best < 0.4:
         return False
 
     return True
 
+def log_debug(data):
+    with open("debug_logs.jsonl", "a") as f:
+        f.write(json.dumps(data) + "\n")
 
 # -------------------------
 # MAIN PIPELINE
@@ -47,7 +55,7 @@ def handle_question(question):
     # -------------------------
     # 1. RAG SEARCH
     # -------------------------
-    rag_results, _ = rag.search(text, k=20, final_k=3)
+    rag_results, best_score = rag.search(text, k=20, final_k=3)
 
     use_rag = should_use_rag(rag_results)
 
@@ -114,7 +122,11 @@ Context:
 Weather:
 {weather if weather else "Not relevant"}
 """
-
+    log_debug({
+    "question": text,
+    "best_score": best_score,
+    "retrieved": rag_results
+})
     # -------------------------
     # 4. GENERATE
     # -------------------------
