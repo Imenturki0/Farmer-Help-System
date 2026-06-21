@@ -1,0 +1,702 @@
+[
+  {
+    "chunk_id": 1428,
+    "source": "Agronomy-Manual.pdf",
+    "question": "When is it important to do the nodulation test?",
+    "ground_truth": "6 weeks after emergence.",
+    "context": "Checking for nodulation Active nodules are bright pink inside when cut through with a clean knife whereas inactive young nodules are white. It is always important to do this nodulation test 6 weeks after emergence as this can inform whether to come in with a light top dress if nodulation did not take place as expected. Extended wet conditions in the soil create an anaerobic environment which reduces nodulation. In the case where nodulation is weak a light top dressing of about 75kg/Ha may be recommended and should be applied before ﬂowering."
+  },
+  {
+    "chunk_id": 236,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What is the C:N ratio of mature compost?",
+    "ground_truth": "The C:N ratio of mature compost is about 12:1.",
+    "context": "Microbes utilise nitrogen to breakdown plant or animal remains – about 1g is required for every 24g of carbon in their ‘food’. This has a couple of important consequences. Firstly the ideal ratio of C:N for material added to your heap is around 24:1 – it’s not an exact science so let’s say from 25-30:1. If it is greatly in excess of that figure (> 40) the breakdown process will slow down as the microbes will need many lifecycles to oxidise away the excess carbon; if such material is added to the soil the bugs will have to scavenge the soil solution to obtain enough nitrogen which will cause plants to suffer from nitrogen deficiency. If the C:N ration is less than 20 there will be too much nitrogen in the material, more than is required by the bugs and the excess is released as ammonia which is lost as a gas to the atmosphere. So you need to obtain a balance between carbon-rich woody materials and nitrogen-rich green sappy plants or animal manures. In general a good mix is about 2 parts high carbon materials to 1 part high nitrogen materials. The C:N ratio of mature compost is about 12:1. This is a stable product that will not deplete the soil of nitrogen when incorporated."
+  },
+  {
+    "chunk_id": 89,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What is the function of large pores in soil?",
+    "ground_truth": "Large pores empty quickly after rain and allow air to enter.",
+    "context": "from large to small. This network of variable sized pores is the basis of a well- structured soil and good plant growth. The large pores empty quickly after rain and allow air to enter, while the small ones retain water that may later be taken up by plants. Roots do not readily enter pores unless the pores are of the same or larger diameter than themselves. Crops with thicker roots like peas and beans are therefore more sensitive to soil compaction than brassicas with thinner roots."
+  },
+  {
+    "chunk_id": 1848,
+    "source": "IJSRA-2025-0410Article.pdf",
+    "question": "What do eggshells provide when used as part of fertilizer?",
+    "ground_truth": "When used as part of fertilizer, eggshells maintain the fertility and nutritional balance of the soil and provide energy for the plant roots.",
+    "context": "which is very important for the flowering and fruiting of plants. Banana peels act as a balanced source of nutrients and help increase soil fertility. Since it decomposes quickly, it easily mixes with the soil and provides nutrients to the roots of plants. decomposition process of vegetable scraps is easy and fast, which helps in controlling the pH of the soil. It improves soil health and reduces soil acidity [7]. Eggshells: Eggshells are an excellent source of calcium for plants. They help in balancing the pH of the soil and help in the development of plant roots. When eggshells are used as part of fertilizer, they maintain the fertility and nutritional balance of the soil. In particular, they provide energy for the plant roots [8]. Tea leaves and coffee grounds: Tea leaves and coffee grounds are also very beneficial for the soil. They contain acidic elements and nitrogen, which help in improving the growth of plant leaves and organic matter. In acidic soil [9]. Although their decomposition process is a bit slow, they provide important mineral elements for the soil."
+  },
+  {
+    "chunk_id": 504,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What vegetables have been seen to have this disorder?",
+    "ground_truth": "Potatoes and brassica vegetables like cabbage, cauliflower and broccoli.",
+    "context": "This water blistering disorder crops up from time to time with certain indoor and outdoor plants. Symptoms appear as bumps or as a raised crusty appearance usually on the underside of older leaves. It happens when plants take up more water than they can transpire, pressure builds within the plant and bursts out through the epidermis. This occurs under conditions of damp or wet soil with high humidity around the leaves. Often occurs when you get warm days followed by cool nights. Has been seen in potatoes and brassica vegetables like cabbage, cauliflower and broccoli."
+  },
+  {
+    "chunk_id": 450,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What are the different types of canker lesions?",
+    "ground_truth": "black, brown or orange-brown canker",
+    "context": "Parsnip canker Parsnip canker is a common cause of crop wastage in both early and main season crops. In Ireland all the main varieties can be infected especially White Spear and Javelin. Canker development is linked to the presence of specific pathogens and our understanding of these is improving. There are several different types of canker lesions referred to as black, brown or orange-brown canker. The different crown cankers are often difficult to distinguish and are frequently referred to as black cankers or black spot. The fungi responsible include the"
+  },
+  {
+    "chunk_id": 409,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What is the alternative method to rotation for managing club root?",
+    "ground_truth": "The other alternative is to lime the ground to a pH of about 7.4 or above.",
+    "context": "It’s a disease that’s intimately associated with pH – worst at low pH’s and absent from very high pH’s. Despite growing brassicas intensively for many decades at Kinsealy there is no club root because the soil is naturally high in lime (pH 7.6- 8.0). It’s a similar situation in the sandy fields around Rush Co Dublin where’s there’s no clubroot despite brassicas been grown in the area for generations. The soil is derived from windblown sea sand which has a naturally high pH. If you do have club root, maintain long rotations of 6-7 years between brassicas to keep the inoculum at low levels and if possible stay away from infected field altogether with susceptible crops. The other alternative is to lime the ground to a pH of about 7.4 or above – high pH’s don’t kill the organism but prevent it from germinating. However there have been cases in the UK where club root can still occur despite liming the ground. In cases where a brassica crop is to be planted in a field with low levels of club root then the preventative use of Perlka (calcium cyanamide) can help. Use 400-500 kg/ha rotavated in one week prior to planting, followed by another 400-500 kg/ha 2-3 weeks post planting preferably earthed up. Must apply to dry crop foliage otherwise scorch will occur. Contains about 20% N so take that into account when calculating nitrogen application. Perlka is not suitable for swedes."
+  },
+  {
+    "chunk_id": 298,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What is the most effective deterrent mentioned for bird damage?",
+    "ground_truth": "Bangers, especially if backed up by shooting.",
+    "context": "Birds can cause major damage to certain vegetable crops. The two main species involved are pigeons and crows. Pigeons beans. The worst attacks occur in the May-June period and during the winter months. But if numbers are high and on small plot areas attacks can be all-year- round. Crows can directly attack crops such as potatoes and sweetcorn, take legume seeds out of the ground and cause a general nuisance of themselves by pulling up recently planted modules in pursuit of food. There are numerous scaring devises on the market which may be initially effective but birds invariably get used to them. On one of the brassica trial plots in Kinsealy we pigeons off. After a few weeks of effectiveness they all failed miserably and the crops had to netted, which worked. The most effective deterrent are bangers especially if backed up by shooting – this approach is frequently used in commercial crops. For small scale areas and increasingly on field scale, vulnerable crops such as brassicas are covered with nets to ward off pigeon damage. It would be remiss not to point out that birds can also be beneficial in eating a range of pests such as leatherjackets and caterpillars."
+  },
+  {
+    "chunk_id": 1842,
+    "source": "IJSRA-2025-0410Article.pdf",
+    "question": "What can be produced from everyday kitchen waste?",
+    "ground_truth": "organic fertilizer",
+    "context": "Increased production, environmental protection and food security have become important goals in the current global agricultural system. However, one of the biggest problems associated with the global agricultural production system is major challenge for farmers. For this reason, the need for a sustainable and environmentally friendly alternative for agriculture has become very clear [1]. Here, the idea of producing organic fertilizer from everyday kitchen waste has micronutrients, which are very beneficial for plant growth. About 50%–70% of the waste associated with the daily lives of people worldwide is food-related, most of which is known as kitchen waste. This waste is usually disposed of or convert this waste into effective organic fertilizer that will increase plant growth and soil fertility [2]. In fact, the idea of converting kitchen waste into organic fertilizer is an important step towards establishing a sustainable agricultural system. While on the one hand it reduces pollution on the environment, on the other hand it"
+  },
+  {
+    "chunk_id": 216,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What plants are considered particularly noxious exceptions that should not be added?",
+    "ground_truth": "club root, white rot and sclerotinia",
+    "context": "And the original organic matter can encompass just about anything that once maintained that adding meat to a heap will attract rats but provided you aerate the pile to allow for a quick breakdown they probably won’t be a problem. Not that rats and mice won’t occasionally visit but they use a compost heap more as a house than a larder. If they do become a problem use a solid sided bin or lay down rat bait during winter. Weeds can also be added including nasty ones like docks, dandelions and scutch – again – provided you have a hot enough heap that gets turned. Most diseased plants can be added but make exceptions for those ones that are particularly noxious: club root, white rot and sclerotinia. Potato blight can be added provided you cover the infected haulm – it can continue to release spores if just thrown on top of a heap. Addition of up to 10% of a clay soil to the heap can be beneficial as it allows the nutrients to be stabilized and conserved in clay/humus complexes."
+  },
+  {
+    "chunk_id": 1523,
+    "source": "Agronomy-Manual.pdf",
+    "question": "What pesticide molecule has been developed to act as a bird repellent?",
+    "ground_truth": "9,10-Anthraquinone 50% WP (Bird Shield)",
+    "context": "Pests and diseases Aphids and stalk borers can attack wheat with aphids coming from ﬂowering onwards. Farmers must also be on the look-out for “Fall armyworm” given that wheat is one of the host crops to the pest. These pests can be controlled with appropriate pesticide sprays after During the late grain-ﬁlling period, Quelea birds may consume much grain and reduce yields signiﬁcantly if not attended to. A pesticide molecule called 9,10-Anthraquinone 50% WP (Bird Shield) has been developed, which can be used as a seed dressing or as a foliar spray at soft dough stage. Efﬁcacy of this pesticide molecule can be enhanced by applying with a sticker and also a rainfree period of 4 hours or more. This pesticide molecule will act as a bird repellent. This is the best and the most efﬁcient option. The other option is bird scaring gangs. Fusarium Head Blight and Take-All may cause yield reduction. Farmers must seek professional advice on how to control these diseases."
+  },
+  {
+    "chunk_id": 1188,
+    "source": "Agronomy-Manual.pdf",
+    "question": "What factors determine the amount of lime to be applied?",
+    "ground_truth": "The amount is depended on the acidity levels of the soil and differs from one soil type to another.",
+    "context": "What amounts of lime can one We recommend farmers to follow recommendations on the soil analysis results with regards to amounts and type of lime to be applied. The amount is depended on the acidity levels of the soil and differs from one soil type to another. However, the following general recommendation can be useful and is dependent on the soil type. Amount of lime required to raise soil pH by 0.1 units for different soil types - a gentle guide:"
+  },
+  {
+    "chunk_id": 197,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "How is manganese deficiency usually induced?",
+    "ground_truth": "induced by high pH.",
+    "context": "Manganese (Mn) The availability of manganese is intimately increasingly unavailable as pH increases and at very low pH’s can become available to such an extent that it’s toxic to plants. In general there is usually sufficient manganese in the soil and any deficiency that occurs is an induced one – induced by high pH. Manganese deficiency. Is fairly common in peaty soils where pH is greater than 6.5. On mineral soils it is most severe in sensitive crops at pH above 7.0. Can also be induced by drought. The most"
+  },
+  {
+    "chunk_id": 1267,
+    "source": "Agronomy-Manual.pdf",
+    "question": "What are some of the pros of the bulk storage method?",
+    "ground_truth": "It is more economical than bag storage, less supervision is required, labour requirements and handling are reduced, and it is more hygienic than bag storage.",
+    "context": "Bulk storage There are many methods that can be used for bulk storage. Examples include: above ground silos, bulk containers and bags stored in the open or in buildings. There are a number of pros for the bulk storage method. These include: It is more economical than bag storage Less supervision is required Labour requirements and handling are reduced It is more hygienic than bag storage However, bulk storage has some cons in that it is costly in terms of capital outlay requirements than bagging"
+  },
+  {
+    "chunk_id": 833,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What is the ideal temperature for germination of iceberg lettuce?",
+    "ground_truth": "15-21°C",
+    "context": "Iceberg lettuce is a crisp lettuce that is grown outside and not under glass. Sow in blocks or modules from February to the third week in July. Ideal temperature for germination is approximately 15-21°C. Take note that at temperatures greater than 27°C, high temperature dormancy can occur. It takes from 3-5 weeks from sowing to transplanting. Plant out from April to early August at a spacing of 35 x 30 cm. The crop will mature in 7-10 weeks from planting."
+  },
+  {
+    "chunk_id": 98,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "If bad compaction is part of a problem, what is the only way to cure it?",
+    "ground_truth": "deep cultivation",
+    "context": "Compacted soil is another example of a poorly structured soil. It often arises when heavy machinery is driven over wet soils, or if the ground is regularly ploughed to the same depth. The end result is a poorly drained soil which can lead to waterlogging in wet weather. A waterlogged soil has a direct effect on plant growth. Just like leaves, roots respire – they need air in the soil to be able to breath in oxygen and breath out carbon dioxide. So if excess water drives out the air for any considerable period of time, the roots will be severely damaged or killed. If bad compaction is part of your problem the only way to cure it is by deep cultivation."
+  },
+  {
+    "chunk_id": 96,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "How can soils be improved?",
+    "ground_truth": "One of the central planks of soil improvement is the addition of mushroom compost or farmyard manure.",
+    "context": "Good soil structure and soil health are inextricably entwined. And both are essential for optimum plant growth. Over tilling of the soil or working it when wet can cause soil structure to degrade. And particularly with soils low in organic matter – a key component in soil structural resilience. So how can soils be improved? One of the central planks of soil improvement is the addition of mushroom compost or farmyard manure. These materials increase water retention in light soils and help to keep heavy soils open and improve their workability. Organic matter also plays a large part in the formation and stabilisation of soil aggregates, which in turn improves soil structure."
+  },
+  {
+    "chunk_id": 202,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "When should organic matter be dug in or surface applied?",
+    "ground_truth": "during the autumn or winter months.",
+    "context": "Organic matter should be dug in or surface applied during the autumn or winter months at a rate of about 5-10 kg per m 2 . It can also be applied prior to planting, as for example with potatoes. Organic matter is normally applied in rotation to the high nitrogen demanding crops: transplanted brassicas, potatoes and spinach. Final word of warning – don’t be tempted to apply copious amounts of organic matter every year to the same ground . Sufficient is"
+  },
+  {
+    "chunk_id": 403,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What symptoms does the disease cause on brassica plants?",
+    "ground_truth": "It causes a canker or constriction at the base of a brassica plant causing the stem to blacken and the roots to decay, which will cause a stunting and yellowing of the plants which may keel over at the end stage.",
+    "context": "somewhat different symptoms on other brassicas. It typically causes a canker or constriction at the base of a brassica plant causing the stem to blacken and the roots to decay. This will cause a stunting and yellowing of the plants which may keel over at the end stage. The disease tends to occur randomly in the field. If it attacks young plants the stem can be constricted to such an extent that it breaks in two. The sources of infection are the same as those detailed under Dry Rot."
+  },
+  {
+    "chunk_id": 432,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What does white spot survive on?",
+    "ground_truth": "White spot survives on wild and volunteer brassicas.",
+    "context": "White spot ( Pseudocercosporella capsellae ) and oilseed rape. Years ago it used to be a serious disease of turnips and swedes along the western seaboard in high rainfall areas. The disease starts off as small circular spots (2-5 mm in diameter), grey-green in colour that later turns light tan to white and the spots enlarge to over a centimetre. It’s encouraged by wet weather and the wind borne spores are splash spread by rain. White spot doesn’t persist in the soil and survives on wild and volunteer brassicas."
+  },
+  {
+    "chunk_id": 1023,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "Where was York originally introduced?",
+    "ground_truth": "York was probably introduced into England before 1763 and presumably linked with the city of York.",
+    "context": "York cabbage is a distinctly Irish term and refers to a pointed cabbage; growers will refer to ‘spring York’ or ‘summer York’ meaning any pointed variety of cabbage maturing at those times of year. Where does the name come from? According to Mike Day of NIAB York was a very old pointed variety probably introduced into England before 1763 and presumably linked with the city of York; it was phased out because it was very loose. And the name must have been kept on in Ireland as a generic term for pointed varieties in general."
+  },
+  {
+    "chunk_id": 1340,
+    "source": "Agronomy-Manual.pdf",
+    "question": "When should top dressing be applied to maize?",
+    "ground_truth": "Top dressing should be applied when the maize is at three and half to 6 Weeks After Crop Emergence (WACE).",
+    "context": "in a band below and to the side of the seed with the mechanical planter. Top dressing should be applied when the maize is at three and half to 6 Weeks After Crop Emergence (WACE). Top dressing splits may be recommended in sandy to sandy loam soils. A maximum of 3 usually is ideal Basal fertilisers which contain zinc are recommended for application every two to three years on sandy soils. If boronated fertilisers are not normally applied as part of the rotation, then a boronated fertiliser should be applied every three years."
+  },
+  {
+    "chunk_id": 93,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What is the average organic matter in the Teagasc soil sample?",
+    "ground_truth": "6.5%",
+    "context": "In general we do not have an issue in this country with low organic matters due to our cool and damp climate. With regular rainfall there is always something growing in the soil, be it crop or weeds. The other side of the coin has to do with temperature; at moderate temperatures plant growth outstrips decomposition and organic matter accumulates; higher temperatures favour the breakdown bugs. There is no ideal amount of soil organic matter. It will vary depending on soil type, crop and climate. Looking at Teagasc soil sample an average of 6.5%."
+  },
+  {
+    "chunk_id": 1229,
+    "source": "Agronomy-Manual.pdf",
+    "question": "What do the “ties” in conservation tillage do?",
+    "ground_truth": "These “ties” act as mini-dams, which collect the rainwater and minimise the flow of water off the field.",
+    "context": "Conservation tillage include: This involves either planting the crop in small furrows, on the ﬂat and making ridges during crop development, or planting the crop on prepared ridges, and then blocking the furrows at regular intervals. These “ties” act as mini-dams, which collect the rainwater and minimise the ﬂow of water off the ﬁeld. They are effective in both a wet and dry season. In a wet season, the crop is elevated on the ridge and suffers less from water-logging. In a dry season, the trapping of rainfall and conserving it in the ﬁeld enhances yield."
+  },
+  {
+    "chunk_id": 377,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "How long can spores remain viable after landing on a leaf surface?",
+    "ground_truth": "Spores can remain viable for up to 3 days, depending upon environmental conditions.",
+    "context": "The pathogen over-winters in volunteers and soil as oospores and as mycelium in infected bulbs. The pathogen produces both asexual sporangia and sexual oospores, both of which can infect young plants being blown or water-splashed up from the soil respectively. To achieve infection the fungus requires cool temperatures (<22°C) and the presence of rain or dew on the leaf surface. Dry weather will halt development of the disease. After landing on a leaf surface, spores can remain viable for up to 3 days, depending upon environmental conditions. In the absence of control measure the disease can completely destroy a crop during the course of 4 infection cycles."
+  },
+  {
+    "chunk_id": 1459,
+    "source": "Agronomy-Manual.pdf",
+    "question": "What tools do labourers require for hand cutting?",
+    "ground_truth": "Labourers require sickles or sharp hoes.",
+    "context": "a) Hand harvesting. This method is suitable for small areas, or where a large labour force is readily available. The advantages of hand harvesting are that losses can be reduced to a minimum; soyabean of a high quality is produced; and the beans normally have a high viability. Therefore, hand harvesting is suitable for seed production. The usual system of hand harvesting is to allow labourers to cut or pull as much plant material as they are able to thresh in For hand cutting, labourers require sickles or sharp hoes. A labourer should be able to cut and thresh at least 50 to 90 kg of clean beans per day."
+  },
+  {
+    "chunk_id": 1708,
+    "source": "Agronomy-Manual.pdf",
+    "question": "What is the maximum length for long cobs?",
+    "ground_truth": "up to 31.5cm",
+    "context": "([FHOOHQW IDUPHUV FKRLFH YDULHW\\ IRU KLJK SRWHQWLDO DQG LUULJDWHG IDUPLQJ ZLWK \\LHOG potential of up to 16 t/ha *RRG WROHUDQFH WR 0DL]H 6WUHDN DQG 0RWWOH 9LUXV 0RGHUDWH WROHUDQFH WR *UH\\ /HDI 6SRW 1RUWKHUQ &RUQ /HDI 6SRW DQG &RPPRQ 5XVW 6HPL IOLQW JUDLQ WH[WXUH 0HGLXP GU\\ GRZQ UDWH RI OHVV WKDQ SHU ZHHN $Q RSWLRQ IRU short rotations but need to be established aerly with irrigation environments) and long cobs (up to 31.5cm and up to 900 kernels per cob) 5HFRPPHQGHG IRU QDWXUDO UHJLRQV DQG &DQ EH JURZQ LQ QDWXUDO UHJLRQV DQG but under irrigation."
+  },
+  {
+    "chunk_id": 1840,
+    "source": "IJSRA-2025-0410Article.pdf",
+    "question": "What are alternative methods being sought in agriculture?",
+    "ground_truth": "Alternative methods are being sought that enhance plant growth and improve soil health without harming the environment.",
+    "context": "With the increasing awareness of environmental friendliness in agriculture, there is a growing concern about the harmful effects of chemical fertilizers. As a result, alternative methods are being sought that enhance plant growth and improve soil health without harming the environment. This paper discusses waste materials used in daily life, such as soil microbial activity and help in providing the right amount of nutrients required by plants. In addition, the method of converting waste materials into compost or directly applying them to the soil is also explained in detail. This method prove to be a sustainable and cost-effective alternative for farming. Through this method, it is possible to maintain environmental balance along with agriculture and can be profitable for farmers, which will usher in a new era in agriculture."
+  },
+  {
+    "chunk_id": 829,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "How can one check for active nitrogen fixation in nodules?",
+    "ground_truth": "If present, cutting the nodules open reveals a pink colour (due to iron compounds), and no pink means they are inactive.",
+    "context": "Peas and broad beans are nodulated by a bacterium called Rhizobium leguminosarum . This species is very common in European soils as it nodulates the vetches which are wild relatives of peas and beans. On the other hand French and runner beans originated in South America have no compatible bacteria in European soils and have difficulty in fixing nitrogen. However it has been found that they can nodulate on certain soils. To check for active nodules, dig up some roots to look for nodules; if present cut them open and a pink colour (due to iron compounds) means they are fixing nitrogen, no pink means they are inactive. The other thing that causes a lack of fixation is high soil nitrogen – legumes will use soil nitrogen (from fertiliser or organic matter) in preference to fixed nitrogen as the latter takes a lot more energy. To improve nodulation on French and runner beans, it’s possible to buy inoculants to mix with the seed prior to sowing."
+  },
+  {
+    "chunk_id": 405,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "How long can club root remain in the ground?",
+    "ground_truth": "It is there for 20 years or more.",
+    "context": "Club root ( Plasmodiophora brassicae ) One of the first things that will alert you to club root is the foliage of a brassica plant going limp on a warm day; and if you pull up the plant you will see the characteristic misshapen roots that confirm the suspicion. It’s one of the worst diseases to attack brassicas as once it gets into the ground it’s there for 20 years or more and there’s no cure for the disease. Virtually all the brassicas succumb to the disease but kale is fairly resistant to it. Some of the brassica weeds such as charlock can also carry it."
+  },
+  {
+    "chunk_id": 895,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "When are potatoes usually planted?",
+    "ground_truth": "The usual time for planting potatoes is March and April.",
+    "context": "The usual time for planting potatoes is March and April. Don’t be tempted to go too early – ideally soil temperatures should around 7°C for three days before planting. Check the Met Eireann website first for the weekly agricultural report for your area – Forecasts > Agricultural Data Report . If you are inland where frost might be an issue don’t plant before mid-March. Early potatoes are planted in March. If well sprouted potatoes planted at this time they should be ready for use during June and July. Main crops are planted in April to early May."
+  },
+  {
+    "chunk_id": 1262,
+    "source": "Agronomy-Manual.pdf",
+    "question": "What is the maximum allowable harvesting loss when using a combine harvester?",
+    "ground_truth": "Harvesting losses must not exceed 3%.",
+    "context": "What needs to be checked on a combine harvester? Harvesting losses must not exceed 3% when using a combine harvester and therefore it is important for farmers to do a ‘health check’ from ‘front to back’ using a check list provided by experts/suppliers. Always target ZERO breakdowns during the harvesting A health check is critical - April/ May is the right time to do it. Part of the checklist/inspection points: tanks, straw shredders among other points must be checked and if need be rectiﬁed, adjusted or even replaced."
+  },
+  {
+    "chunk_id": 508,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "How is bruising in potatoes characterized?",
+    "ground_truth": "It is characterised by greyish-blue and black patches in the flesh with no external symptoms.",
+    "context": "Bruising in potatoes Mechanical damage when lifting or handling potatoes can show up as bruising. It is characterised by greyish-blue and black patches in the flesh with no external symptoms. High dry matter varieties are more prone to this disorder. Lifting potatoes in dry soil conditions especially if stones are present may cause bruising. Lifting or grading potatoes in cold conditions exacerbates Bruising in Coleen potato. the condition. Rough handling at any stage between farm and outlet can cause bruising. Growing potatoes in potash deficient soils can make a tuber more susceptible to damage."
+  },
+  {
+    "chunk_id": 33,
+    "source": "23. Dr Toe Toe Khaing (243-250).pdf",
+    "question": "What were the pH values of the prepared organic fertilizers under aerobic condition using both meal cakes?",
+    "ground_truth": "the values of pH, prepared organic fertilizers under aerobic condition using both meal cakes were slightly alkaline",
+    "context": "OF-1(prepared organic fertilizer with peanut meal cake under aerobic condition) OF-2 (prepared organic fertilizer with peanut meal cake under anaerobic condition) OF-3 (prepared organic fertilizer with sesame meal cake under aerobic condition) OF-4 (prepared organic fertilizer with sesame meal cake under anaerobic condition) The pH and Moisture Values of the Prepared Organic Fertilizers the values of pH, prepared organic fertilizers under aerobic condition using both meal cakes were slightly alkaline, but under anaerobic condition were nearly neutral. The results of moisture in all prepared organic fertilizers were significantly lesser than two commercial organic fertilizers."
+  },
+  {
+    "chunk_id": 317,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What are caterpillars the larvae of?",
+    "ground_truth": "Butterflies and moths.",
+    "context": "Caterpillar and cutworm Caterpillars are familiar to every grower as they are a common pest that attack a wide range of vegetables but are particularly associated with brassicas. Caterpillars are the larvae of butterflies and moths. Butterflies fly during the day and have clubbed antennae whilst most moths fly at night and have feathery or straight antennae. They are pests that occur in the summer and continue into the autumn and in warm years can appear in large numbers. On small areas pick off the caterpillars, otherwise use one of the insecticides available such as pyrethrum or cypermethrin. Take note that butterflies and moths have ability to lay through bionet if the foliage is pressing up against the net. There are quite a variety of Some of the commoner ones are detailed below."
+  },
+  {
+    "chunk_id": 1779,
+    "source": "Fertilizers___Food_Waste_-_Jane_Goodall-s_Roots___Shoots.pdf",
+    "question": "What does manure include besides faeces?",
+    "ground_truth": "Manure will also include animal bedding like straw and hay.",
+    "context": "Manure – otherwise known as animal faeces, is the waste from farmyards and stables. Along with faeces it will also include animal bedding like straw and hay. Manure’s main value comes in maintaining and improving soil quality because of the Mixing manure with the top soil improves the structure of the soil and helps it absorb nutrients. Manure must be carefully stored to minimize loss of nutrients, particularly nitrogen. It must be applied to the right kind of crop at the proper time."
+  },
+  {
+    "chunk_id": 643,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What root color is used as an indicator for the timing of planting out container grown plants?",
+    "ground_truth": "White roots that hold onto the compost indicate the right timing; if the roots are brown, you may be some days late.",
+    "context": "When transplants are large enough to handle they are ready to plant out e.g. brassicas and lettuce will be at the 3-4 leaf stage, leeks will be at pencil thickness. Quite a good indicator for container grown plants re timing in planting out, is root colour – white roots that hold onto the compost and you’ve got the timing right; if brown then you may be some days late. This is not a hard and fast rule, just an indicator. Commercial growers use planting machines to plant out modules and block plants but gardeners are not so lucky where a trowel, garden line and some backache is the order of the day. Water your plants before you plant out. Using a garden line lay out your plants at the"
+  },
+  {
+    "chunk_id": 1699,
+    "source": "Agronomy-Manual.pdf",
+    "question": "What is the high yield potential of the variety in a good season?",
+    "ground_truth": "up to 10 t/ha at 53000 plants per ha.",
+    "context": "the SC 403. It confers significant early maturity superiority (<110 days to reach physiological maturity at 1300 metres above sea level). Excellent heat and drought stress tolerance characteristics making it suitable for areas with short rainfall seasons such as regions 4 and 5. Excellent wide regional adaptation. An excellent alternative for small grain cereals such as sorghum and millet. An elastic hybrid, in a poor season a decent yield is achievable and in a good season the variety has high yield potential of up to 10 t/ha at 53000 plants per ha. Average plant height of about 2.2m and an average cob placement of 1.02m aiding excellent standability. Good standability at high population densities of up to 72 000 plants per Ha. Moderate tolerance to Maize Streak Virus, Phaeosphaeria Leaf Spot and Grey Leaf Spot diseases Hard dent grain texture White grain colour Excellent cob rot tolerance A variety highly recommended for very low to low potential conditions - marginal rainfall areas of Zimbabwe in particular agro-ecological region IV and V Suitable for very early or late planting in high potential areas"
+  },
+  {
+    "chunk_id": 315,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What is a cultural control method mentioned for this pest?",
+    "ground_truth": "To delay sowing for about 10 days after cultivating to reduce the risk of attack.",
+    "context": "Bean seed fly the female lays eggs on freshly disturbed ground. They are attracted by decomposing organic matter and plant debris. The eggs hatch after a few days length. It’s the larvae that do the damage by feeding on buried bean seed, on emerging Alliums and recently planted cucurbits. There are several generations and attacks can occur until early autumn. Commercial growers use seed treatments to combat the pest on susceptible crops. A cultural control method is to delay sowing for about 10 days after cultivating to reduce the risk of attack"
+  },
+  {
+    "chunk_id": 398,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "How long can the disease survive in the soil?",
+    "ground_truth": "The disease can survive for up to two years in soil.",
+    "context": "Cercospora leaf spot (Cercospora beticola) This leaf spotting disease of the beet family traditionally was less common than that caused temperatures to thrive. But it seems to be on the increase. The spots which are small usually retain their circular shape and are surrounded by a reddish purple margin – a feature than helps to distinguish it from Ramularia leaf spot. Spores are wind and rain dispersed but dry periods, of up to 6 hours during the day, enhance infection compared with continuous wetness. Sclerotia are formed in the infected leaves and the disease can survive for up to two years in soil. Initial infection sources encompass infected seed, weed hosts (fat hen, orache) and infected crop residues."
+  },
+  {
+    "chunk_id": 634,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "Why do plants need to be 'hardened off'?",
+    "ground_truth": "To acclimatise them prior to planting out because there can be a big difference in climatic conditions between the glasshouse and outdoors.",
+    "context": "Hardening off You may get a check to growth if plants raised under protection are planted straight out into their final quarters. This is because there can be a big difference in climatic conditions between the glasshouse and outdoors. To overcome this we ‘harden off’ our young plants to acclimatise them prior to planting out. Commercial propagators will lay the trays out in a sheltered area beside the glasshouse for a number of days before they are sent to the grower. You could also place your plants in a frame and give increasing amounts of air to harden off. However as the season progresses there is less need for hardening off e.g. modular brassicas are put straight into the field from the tunnel or glasshouse."
+  },
+  {
+    "chunk_id": 1846,
+    "source": "IJSRA-2025-0410Article.pdf",
+    "question": "What kitchen wastes can be used as liquid fertilizers?",
+    "ground_truth": "Banana peels and tea leaves can be used as liquid fertilizers.",
+    "context": "In this context, the idea of making affordable and environmentally friendly fertilizer from kitchen waste can be very waste is converted into rich fertilizer for the soil using earthworms. Similarly, some kitchen wastes such as banana peels and tea leaves can be used as liquid fertilizers, which are helpful in increasing the growth of leaves and roots of plants. they can cause odor and pest infestation due to improper decomposition. However, these problems can be solved through technological advancements and new methods. Many new studies are testing innovative methods to make kitchen waste more effective fertilizers [5]. In addition, it is possible to revolutionize agriculture through agricultural research by properly using kitchen waste as bring positive results for the environment. Making organic fertilizers from kitchen waste can create a clear path for society [6]. Through this study, we will discuss in detail the process of making organic fertilizers from kitchen waste and its benefits. How this waste can be properly converted and how it can increase production in agriculture. 2. Kitchen waste that can be used as organic fertilizer"
+  },
+  {
+    "chunk_id": 1756,
+    "source": "compost_factsheet_public.pdf",
+    "question": "How does compost affect sandy and clay soils?",
+    "ground_truth": "Compost helps sandy soils hold nutrients and water, and loosens clay soils.",
+    "context": "With a rake, spread a thin layer of compost (up to 1/2 inch) onto grass to enhance nu- trient supply, increase aeration and water holding capacity, and pro- mote the development of beneficial soil or- ganisms. It’s best to do this in the spring and fall. Ideally, this should be done after aerating the lawn. Compost helps sandy soils hold nu- trients and water, and loosens clay soils. Use on Garden Plants. Regular applica- tions of compost tea throughout the grow- ing season can improve tilth and aeration of depleted soils. Garden plants can bene- fit from direct soil application during the vigorous growth stage in early summer, flowering, and fruit set. This effect can be enhanced with periodic amendment of the soil with compost."
+  },
+  {
+    "chunk_id": 731,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "When does the season for sprouts stretch?",
+    "ground_truth": "The season now stretches from September to March.",
+    "context": "Plant breeders have done a number of favours for this much maligned vegetable – the season now stretches from September to March, the sprouts are easier to pick and better flavoured, plus the development of hybrids has rendered blown sprouts a thing of the past. However sprouts can be a difficult enough crop for the amateur to grow for a few reasons. The crop – including the bit you eat – can be prone to a variety of pests and diseases which the professional grower can counter by using a range of chemicals that are not available to gardeners."
+  },
+  {
+    "chunk_id": 207,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What three main fertilisers are incorporated into compound artificial manures?",
+    "ground_truth": "nitrogen, phosphate and potash",
+    "context": "There are various compound artificial manures on sale which incorporate the three main fertilisers i.e. nitrogen, phosphate and potash and sometimes other elements such as sulphur or boron. Granular compound fertilisers such as 10:10:20, 8:5:18+ B or 7:6:17 are ideal for the vegetable garden and do not have to be mixed. They are normally available at agricultural outlets. Apply at a rate of 50-90g per m 2 , or preferably in accordance with the results of a soil test. There are other proprietary compounds on the amateur market suitable for vegetables and these should be used according to the manufacturer’s instructions. Organic based fertilisers are also available in retail outlets."
+  },
+  {
+    "chunk_id": 657,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "Why must the leaves be dried on the bulb?",
+    "ground_truth": "Sprout inhibitors are produced in the leaves that are translocated down to the bulb.",
+    "context": "Equally important is ensuring that the crop is harvested correctly. When the tops fall over on the plants in August or September, sprout inhibitors are produced in the leaves that are translocated down to the bulb and it’s for this reason that the leaves must be dried on the bulb. When most of the tops have fallen over lift the crop and dry off, ideally in a glasshouse. It’s essential to seal the neck of the bulb by ensuring that the leaves are completely dry before removing them. The bulbs can be tied into ‘onion ropes’ or put into a net bag and hung up. Alternatively they can be put into stackable slatted wooden trays going to a maximum of two deep in the tray. The main idea is to have a flow of air around the bulbs to remove the moisture that’s continually produced by respiration."
+  },
+  {
+    "chunk_id": 647,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What happens if seed is deeply buried?",
+    "ground_truth": "Seed that is deeply buried will emerge later in comparison to more shallowly sown seed.",
+    "context": "If sowing outdoors it is important that you prepare the ground well by forking and raking to produce a fine tilth. For direct drilled crops it’s critical to sow your seeds at an even depth that leads to even emergence, as you want to end up with a uniformly sized crop. It’s not easy to make a drill by hand that has an even depth all the way along its length. Seed that is deeply buried will emerge later in comparison to more shallowly sown seed – and this difference is maintained right through to harvest. To get over this you can make a wooden sowing frame to help you control the depth of sowing."
+  },
+  {
+    "chunk_id": 1341,
+    "source": "Agronomy-Manual.pdf",
+    "question": "What will greatly improve the response of maize to the applied fertiliser?",
+    "ground_truth": "The addition of manure and ash will greatly improve the response of maize to the applied fertiliser.",
+    "context": "The yield potential largely depends on the variety, expected rainfall and on the management applied to the crop. The addition of manure and ash will greatly improve the response of maize to the applied fertiliser. Under commercial set ups addition of lime to acidic soils improve response to fertilisers Fertiliser rates may be reduced after a drought, where manure and ash is applied or when the maize is following a legume or well-fertilised crop, like potatoes. Basal fertiliser must be applied before or at the time of"
+  },
+  {
+    "chunk_id": 492,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "Why must you minimize damage when lifting and storing crops?",
+    "ground_truth": "A cut surface will allow an entry point for the organism.",
+    "context": "Don’t save seed from a badly infected crop Using good quality certified seed will reduce the problem but not necessarily eliminate it Burn off affected crops as early as possible and leave for 3-4 weeks before When lifting and storing minimise damage as a cut surface will allow an entry point for the organism Avoid lifting crops in the wet Sell off an infected crop as soon as you can Make sure to dry the crop well going into store as rapid drying will kill off the bacteria"
+  },
+  {
+    "chunk_id": 116,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What must the soil below the seed be to allow rapid root growth?",
+    "ground_truth": "It must be uncompacted.",
+    "context": "The formation of a fine seed bed is of great importance, especially for smaller seeds such as onions and carrots. For a seed to germinate it requires warmth, air and water. First the seed must be in good contact with the soil to absorb soil moisture. This is easier to achieve if the bed is fine rather than cloddy. Second, the soil below the seed must be uncompacted to allow rapid root growth and it should contain a ready supply of nutrients. Finally the soil above the seed should be loose enough to allow the shoot to emerge into the"
+  },
+  {
+    "chunk_id": 910,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What temperature should seeds be sown at?",
+    "ground_truth": "around 20°C",
+    "context": "With their origin mainly in Central America and Mexico they are all half hardy. Hence the crop is normally propagated under cover and planted out after the last frosts. Sow the seeds singly into large modules, 5 cm blocks or 7-8 cm pots at a temperature of around 20°C in late April or early May. Provide frost protection if necessary during the propagation stage. They could also be direct drilled when soil temperatures reach 11-12°C sometime in May, preferably through black plastic to improve soil temperatures and weed control."
+  },
+  {
+    "chunk_id": 1175,
+    "source": "Agronomy-Manual.pdf",
+    "question": "What is the maximum size generally considered for a soil sampling block?",
+    "ground_truth": "Generally, a block of 10-20 ha is considered the maximum size.",
+    "context": "How to sample soils? t The most commonly used procedure for soil sampling would be based on soil t Fields are split into sampling blocks that t Hillsides are kept separate from bottoms since the soil types will vary organize the soil types throughout the sampling area. Samples will not necessarily need to be collected for every soil type; however, similar soils should be kept together. methods are commonly used and recommended where samples are taken in a zig zag or at cross diagonal format from a block. This will result in a sample which scientiﬁcally represents the whole block. t The sampling block will be dependent on the soils and topography. Generally, a block of 10-20 ha is considered the maximum size. t Smaller sampling blocks may be needed if the soils are quite variable or a production problem is apparent and t Once the sampling block is determined, a sufﬁcient number of sites/cores should be taken to acquire a representative sample. This is generally 10 to 20 sites. The depth of sample for surface soils would be about 20cm or as deep as the primary tillage or speciﬁcally as deep as the root zone of intended crop(s). This is also called the tillage layer. t The most commonly used tools for hoes or sometimes shovels. t Samples from different sites in a block are then mixed thoroughly and bagged into a khaki pocket and labelled. Information on the labels should include intended crop before they are submitted for analysis to approved laboratories. When to sample soils? t Winter is the ideal time for soil sampling except for testing for nitrate-nitrogen in sandy soils. t Winter sampling allows more time to get the results from the testing laboratory and avoids the busy laboratory schedule in the spring. t Getting results on time will also allow"
+  },
+  {
+    "chunk_id": 262,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What was the relative yield for beetroot when weeds were between the rows?",
+    "ground_truth": "71%",
+    "context": "An interesting experiment took place at the National Vegetable Research Station in Warwickshire where they looked at the effect of weed competition on two vegetable they removed all the weeds, in another they hoed between the rows but left a band of weeds to grow in the rows and in the final plot they left a similar band of weeds but this time between the rows. So the weeds were the same in both weedy plots, differing only in position. When the crops were harvested the onions were fine in the weed free plot but in the other plots were a write-off regardless of whether the weeds were in-row or between the rows. However with the beetroot the results were different. The relative yields were: weed free 100%, weeds intra-row 82%, weeds between the rows 71%."
+  },
+  {
+    "chunk_id": 724,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What is the best variety of broccoli to withstand a variety of weather conditions?",
+    "ground_truth": "Parthenon",
+    "context": "Broccoli can be a temperamental crop. During hot weather you may find some of the beads on heads that are close to harvest opening up and turning yellow; this can also happen after harvest. Certain varieties are more prone to this problem than others but is worst where the heads are slightly over mature so harvest on time. Depending on variety heads can also discolour if the weather turns sunny and may also discolour in very wet summers. Parthenon is the best variety to withstand a variety of weather conditions."
+  },
+  {
+    "chunk_id": 192,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "Where are deficiencies in sulphur more likely to occur?",
+    "ground_truth": "Deficiencies are more likely to occur on light soils deficient in organic matter rather than on heavier soils.",
+    "context": "oils. Amongst vegetables the legumes, brassicas and alliums have a high requirement for sulphur. Sulphur is very similar to nitrogen in nature. It can be amounts in light soils and we don’t normally test for it because of its variable supply in soil. There was never an issue years ago with sulphur deficiency as there was a lot of aerial deposition (sulphur dioxide) from industrial sources and transport burning coal and fuel oil. After the damage caused by acid rain in the 1970’s and 1980’s governments set about reducing sulphur pollution from human activities. We still get aerial deposition but it’s far less than it was. Deficiencies are more likely to occur on light soils deficient in organic matter rather than on heavier soils. Sulphur is naturally available in manure and and has been added to a lot of compound fertilisers. Sulphur can also be applied as a foliar spray both as a nutrient and a fungicide. Flowers of sulphur can be added to soil to reduce pH. A common application rate for sulphur is 20"
+  },
+  {
+    "chunk_id": 1193,
+    "source": "Agronomy-Manual.pdf",
+    "question": "What depth zone is generally recommended for applying lime?",
+    "ground_truth": "15-25cm",
+    "context": "Lime placement and incorporation The most important factor determining the effectiveness of lime is placement and incorporation. Placement for maximum contact with the soil into the root zone of the intended crop/tillage layer is essential and must be We generally recommend lime to be applied in the 15-25cm zone as this is a root zone range of most food crops grown in Zimbabwe e.g. the staple For maximum effectiveness, lime should be uniformly spread and incorporated into and with the soil. Incorporation can be achieved through discing or harrow- ing followed concurrently by a roller. In Zimbabwe liming agents are in powdery formulations to increase surface area for quicker reaction with the soils. Lime can be spread by hand or by lime spreaders - which normally gives the best results."
+  },
+  {
+    "chunk_id": 526,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "When was the covering material removed?",
+    "ground_truth": "The covering material was removed in May.",
+    "context": "The table below shows the differences with the swede variety Magres in sowing dates and whether the crop is covered or not. The covering material was perforated polythene which would have been removed in May. The trial was sown into modules under glass in January and planted out at the end of March and also direct drilled outdoors in March. You can see the effects of cold spring weather on both of the uncovered crops, and the elimination of bolting by covering."
+  },
+  {
+    "chunk_id": 1377,
+    "source": "Agronomy-Manual.pdf",
+    "question": "What does the formula automatically correct the final yield to?",
+    "ground_truth": "12.5% moisture content",
+    "context": "Yield forecasting in maize Walk the land to ensure that the stand is even, standing (not lodging) and there are not many gaps. Reap the cobs from a measured 20 sq. metres. If the rows are at 90cm, then reap 22m row length; and if the rows are 75cm, then measure 26.6m row length. Shell the cobs, weigh the grain and determine the moisture content using a moisture meter Do this for three or four separate samples at widely separate points and determine the average Use the formula below to calculate yield average estimate corrected to 1 ha and to 12.5% Moisture Content Mass Grain (Kg) x (100-moisture content)/ (100-12.5) x10 NB: The formula automatically correct the ﬁnal yield to 12.5% moisture content"
+  },
+  {
+    "chunk_id": 1367,
+    "source": "Agronomy-Manual.pdf",
+    "question": "In many cases on large scale maize production, what equipment is used to broadcast top dressing fertilisers?",
+    "ground_truth": "a vicon is used to broadcast top dressing fertilisers.",
+    "context": "Top dress with Ammonium Nitrate/Urea when the maize is 4 to 6 weeks old. Maize on sandy soils may require a split top-dressing, with the ﬁrst half applied at 4 weeks and the second at 7 weeks after emergence. Use appropriate sized fertiliser cups to place the fertiliser near each plant, or dribble-band the fertiliser along the row with a suitably calibrated pipe attached to a bag (chola). Fertiliser applicators are recommended to band top dressing fertilizer on the inter-rows. These can be calibrated and adjusted depending on the intended rates. In many cases on large scale maize production a vicon is used to broadcast top dressing fertilisers."
+  },
+  {
+    "chunk_id": 665,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "Which type of bean is the hardiest suitable for overwintering?",
+    "ground_truth": "Seville",
+    "context": "Broad or fava beans are a hardy leguminous crop that can be sown in the autumn or spring. There are three main types – Seville, Longpods and Winsors and can be further divided on the basis of seed colour – green or white. Seville (e.g. Aquadulce) are the hardiest suitable for overwintering. Longpods have eight seeds per pod while Winsors have four seeds in shorter, wider pods. A fourth type is the Dwarf or Fan-podded (e.g. The Sutton) which are bushy, short plants that mature quickly."
+  },
+  {
+    "chunk_id": 1241,
+    "source": "Agronomy-Manual.pdf",
+    "question": "What is recommended regarding crop residues?",
+    "ground_truth": "It is better to leave crop residues on the land.",
+    "context": "be prepared to control the extent of residue removal from ﬁelds. It is better to leave crop residues on the land learn the system - begin small, learn how to deal with problems and expand progressively as experience is gained, control weeds throughout the year. Late weed control and winter weed control is essential and beneﬁcial. The use of herbicides may well help in zero-tillage. When using zero tillage it is important to use rotations, monitor pests and diseases and beware of surface compaction."
+  },
+  {
+    "chunk_id": 356,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "How do bacteria spread from plant to plant?",
+    "ground_truth": "Bacteria spread from plant to plant by rain or irrigation splash and are also hands.",
+    "context": "Bacteria are tiny single celled organisms which increase in number by dividing in two. The majority of plant disease is caused by fungal pathogens but bacteria can occasionally cause problems such as blights, leaf spots and soft rots. Unlike fungi bacteria do not produce spores and hence don’t get spread around by the wind. Plant pathogenic bacteria can exist on leaf surfaces without causing any problems; but if for any reason they multiply to sufficient numbers they are able to enter the plant through wounds or natural openings such as stomata or hydathodes. Once inside the plant they multiply and cause disease. Bacteria spread from plant to plant by rain or irrigation splash and are also hands. A number of bacterial diseases are seedborne, e.g. Xanthomonas in Brassicas – if the seed is sown the disease can show up later in the growing crop. Plant pathogenic bacteria do not survive in the soil unless on partly decomposed plant material – the exception is Streptomyces scabies which causes common scab in potatoes and other root crops. Bacterial diseases in vegetable crops have become more common in recent years due to wetter summers – it’s a pathogen that develops in spells of wet weather. Examples of bacterial diseases are bacterial leaf spot on Brassicas, halo blight on beans and blackleg on potatoes."
+  },
+  {
+    "chunk_id": 157,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "Why does high SC damage plant growth?",
+    "ground_truth": "This is due to plant roots finding it more difficult to extract water from the soil.",
+    "context": "Normally when we apply fertiliser some of it is taken up by plant growth, some is absorbed by the soil and humus and some is leached by excess rainfall. However if fertiliser is applied under glass or plastic it can build up in the soil due to lack of rainfall. If the SC goes too high it will damage plant growth. This is due to plant roots finding it more difficult to extract water from the soil, or it may be"
+  },
+  {
+    "chunk_id": 117,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What can a high concentration of nitrogen or potassium fertiliser do to seedlings?",
+    "ground_truth": "It can inhibit seedling emergence by scorching young roots.",
+    "context": "To form a seed bed fork over the ground to a depth of about 10 cm carefully breaking all lumps. The forking down should be done only when the ground is dry enough for the clods to crumble easily. If fertiliser needs to be applied it should be spread during seedbed formation and forked in. Just take care not to overdo it as too high a concentration of nitrogen or potassium fertiliser can inhibit seedling emergence by scorching young roots. This is one of the reasons why we topdress a crop i.e. splitting the application of fertiliser, especially nitrogen, into several applications before and after crop emergence or pre- and post-planting. The final seedbed preparation is carried out by raking to remove small clods and stones and to create an even surface. The aim is to produce a tilth with about 70 per cent of the aggregates ranging in size from a grain of rice to a pea. The diagram below shows the difference between a good and bad seedbed."
+  },
+  {
+    "chunk_id": 414,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "When is Downy mildew most damaging?",
+    "ground_truth": "It is most damaging when it causes early infection of seedling cotyledons.",
+    "context": "Downy mildew ( Peronospora parasitica ) Downy mildew is common on all brassicas except Chinese cabbage and white turnips. The fungus is most damaging when it causes early infection of seedling cotyledons – particularly broccoli and cauliflower – with a substantial proportion of plants being killed outright. It will also affect larger plants of a variety of brassicas and occasionally will occur systemically within a plant, notably in broccoli and cauliflower flowering stems. It can also be important on radish as it causes black lesions on the fleshy root and may also develop internally."
+  },
+  {
+    "chunk_id": 517,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What information does the table show?",
+    "ground_truth": "The table shows the average and extreme dates of last spring and first autumn air frosts, 1971-2000.",
+    "context": "One sometimes sees the instruction on a seed packet or bag of seed potatoes to sow or plant out after the last frost. So how do you know when the date of the last frost will be? The short answer is, you don’t. However past weather records and personal experience can help us in picking a date that hopefully will be correct. The table below shows the average and extreme dates of last spring and first autumn air frosts, 1971-2000."
+  },
+  {
+    "chunk_id": 1469,
+    "source": "Agronomy-Manual.pdf",
+    "question": "What is the ideal pH for groundnut production?",
+    "ground_truth": "5.3 to 6.8",
+    "context": "Basal fertiliser - Groundnuts should be grown in rotation with fertilised, because groundnuts respond well when fertiliser is applied to the previous crop rather than to the groundnuts is applied. Nevertheless, where the soil is known to be infertile or deﬁcient in some nutrients, manure or a low rate (150 to Super Phosphate may be applied. Groundnuts respond well but also helps to ameliorate soil acidity. Top dressing. Groundnuts have a high requirement for calcium, especially during the pegging stage. Low availability of calcium at this stage will result in a large proportion of empty shells. Calcium may be supplied with Gypsum (calcium sulphate) at a rate of 250 kg per ha broadcast over the plants at ﬂowering (7 to 8 weeks after planting). Split apply the Gypsum - half at ﬁrst application and the other half 2 weeks later. Soils and climate Best results are obtained from deep, well-drained soils in good condition. Suitable soils include sands and sandy loams. Groundnuts will not grow well on acid soils and thus liming may be necessary for good production (the ideal pH is 5.3 to 6.8). t Groundnuts must not be grown on the same land more than once in every Groundnuts are a good crop to grow before maize. Early maturing groundnuts (e.g. SC Mwenje and SC Nyanda) take about 115 days or less to maturity on the Middleveld. Late maturing groundnuts take about 160 days to maturity on the Middleveld and hence not very suitable in a rainfed"
+  },
+  {
+    "chunk_id": 1730,
+    "source": "Application_of_Plant_Fertilizer_Serum_Using_Natura.pdf",
+    "question": "What was the comparison result regarding plant growth when serum was used versus when it was not used?",
+    "ground_truth": "The comparison was 50%, namely those that used could grow 4 leaves and those that did not use serum were 2 leaves.",
+    "context": "4. Conclusion The results of this serum research show that the planned product has a large enough potential studies that proved the benefits of onion extract and rice water can have a positive effect on plant growth. This product can be a breakthrough in a business field. And the comparison of the results of this study, the plants from the cutting process to growing that used serum without using serum the comparison was 50%, namely those that used could grow 4 leaves and those that did not use serum were 2 leaves. We would like to thank the Universitas Komputer Indonesia and those who have assisted in the process of making this research."
+  },
+  {
+    "chunk_id": 215,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What are the two phases in the production of compost?",
+    "ground_truth": "The heat production phase and the maturation phase.",
+    "context": "There are two phases in the production of compost: the heat production phase and the maturation phase. Once the wastes are gathered into a heap, the moisture content brought to a suitable level and the mass aerated, the microbes multiply rapidly. The readily degradable constituents of the organic microbes. The materials are oxidised to carbon dioxide and water in the energy liberating reaction. Part of this energy is used for microbe metabolism, the excess is given off as heat. After the initial spike in temperature the heap begins to cool down and after a number of weeks reaches ambient. The end product living micro-organisms – together with products from further complicated chemical reactions between these materials."
+  },
+  {
+    "chunk_id": 1518,
+    "source": "Agronomy-Manual.pdf",
+    "question": "How many preventative fungicide sprays are generally recommended if farmers are located in disease prone areas?",
+    "ground_truth": "Two preventative fungicide sprays are recommended.",
+    "context": "The best and smarter option is for farmers to grow resistant varieties and Seed Co wheat varieties such as SC Select that are resistant to these diseases. Generally two preventative fungicide sprays are recommended if farmers are located in disease prone areas and give some form of insurance against climate change that can result in new disease pathotypes. NB: Farmers are encouraged to scout their wheat crop for diseases, pests and deﬁciencies and make spraying decisions early when pest/disease reaches economic threshold levels."
+  },
+  {
+    "chunk_id": 1541,
+    "source": "Agronomy-Manual.pdf",
+    "question": "How many places should be examined when taking a general inspection of the field?",
+    "ground_truth": "at least ten places in the field",
+    "context": "Here are some tips on how to be a crop doctor: pen. Walk through your ﬁelds in a random manner, stopping every now and then to examine the soil, plants and Examine at least ten places in the ﬁeld when taking a general inspection, but if scouting for pests it may be necessary to examine between 24 and 100 plants, depending on the pest and the size of ﬁeld. Consider the recent weather patterns. How has the weather been for crop production? Has it been hot and dry, cold and wet, or overcast? How may this have affected the crop? Look at the soil and roots. Dig into the soil, and ask yourself soil dry or wet? Is there a crust, compaction or impediment? Are there any pests in the soil? Study the crop plants. What was the planting date? Is the plant spacing correct? Are the plants evenly spaced? How many leaves are on the plant? Do the plants look healthy? When and how was the fertiliser applied? What pests and diseases can you ﬁnd? Are the leaves being eaten? Is there any lodging? How long before harvest? Pull up a plant, cut open the stem, and look to see if there is anything unusual. Pull up a plant, cut open the stem, and look to see if there is anything unusual. Pull open the ﬂowers, pods or cobs; what do you ﬁnd? Are they normal, or are there problems? Weed control. Can you identify the weeds? Are they too numerous? How and when are you going to control the weeds? Did the herbicide work? If no, why not? If you are hand weeding, how long before the ﬁeld will be ﬁnished? Pest and disease control. Do the pests or diseases need to be controlled? How will you do this? Was the last pest or disease control measure effective? If not, why not? Make plans. What is the most important thing to be done in each ﬁeld? How and when are these going to be done?"
+  },
+  {
+    "chunk_id": 902,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What two slug species are implicated?",
+    "ground_truth": "the keeled slug and the garden slug.",
+    "context": "Slugs: if you find you crop riddled with holes along with hollowed out cavities the chances are that slugs are the culprit. The problem tends to be field or plot specific – it’s a problem in certain fields but not in others. Slug attack tends to worse in wet years on heavy soils and varieties vary in their susceptibility. Varieties like Kerr’s Pink, Maris Piper and Rooster are vulnerable; Golden Wonder, Nicola and Pentland Dell are among the least susceptible varieties. Two slug species are implicated: the keeled slug and the garden slug. The"
+  },
+  {
+    "chunk_id": 667,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What is the required spacing between staggered double lines?",
+    "ground_truth": "23 cm apart each way.",
+    "context": "The seed should be sown 5 cm deep in staggered double lines, 23 cm apart each way. If more than one double-row is to be grown allow 60-75 cm between them. Where you want to add organic matter to the soil, open a trench 30 cm deep and wide and add a layer of well-rotted manure or compost to the base and mix with the soil to leave a trench 5 cm deep. Sow your beans and cover over with the remaining soil. If growing on a bed aim for 18-19 plants per square metre – that’s about 23 cm square."
+  },
+  {
+    "chunk_id": 322,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What does the diamond back moth attack?",
+    "ground_truth": "It attacks brassicas especially cabbage.",
+    "context": "Diamond back moth ( Plutella xylostella ) Everything about this caterpillar is small apart from the damage it does. Attacks brassicas especially cabbage with the worst damage showing up on pointed cabbage. In a bad attack every single cabbage in a ﬁeld can be damaged. Diamond back is a small green caterpillar (1 cm) that is difﬁcult to see as it mostly feeds on the underside of the leaf. Two to four generations per year from early summer to late autumn. Feeding leaves characteristic ‘window panes’ on the leaf, and the other diagnostic feature is the caterpillar when disturbed will wriggle and then drop down from the plant remaining suspended by a ﬁne silken thread. Diamond back moth is a migratory species though some adults may overwinter in the milder parts of the country. Native to southern Europe, moths are carried in on high pressure winds during the summer. This pest is hugely destructive of brassica crops in hot countries and occasionally causes problems here in warm dry summers. Two very bad years Diamond back moth, adult and larvae."
+  },
+  {
+    "chunk_id": 710,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What do brassicas like, based on the soil they grow in?",
+    "ground_truth": "Brassicas like limey soils because they are growing on chalk (calcium carbonate).",
+    "context": "Wild cabbage growing on the Cliffs of Dover in chalk soil. It’s difficult to conceive that this loose-leaved plant has given rise to so many distinctively different brassicas. Most of our common brassicas are derived from wild cabbage (Brassica oleraceae) which grows wild in coastal locations in southern Britain, north western Europe and along the Mediterranean. Two things to note about the photograph – to withstand sea breezes the wild cabbage has had to develop a waxy leaf to prevent scorch; it’s growing on chalk (calcium carbonate) so likes limey soils. Brassicas are considered to be calcicoles or calcium loving plants. Perhaps this is why we quite often see calcium deficiency showing up in the cabbage tribe."
+  },
+  {
+    "chunk_id": 654,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What is the ideal storage temperature for potatoes?",
+    "ground_truth": "4°C is an ideal storage temperature.",
+    "context": "Potatoes are a root crop that needs to be lifted and stored by the end of October gets at the tubers they develop poisonous alkaloids in the surface of the tuber as they turn green in colour. Paper sacks that the commercial crop is sold in, would be useful for storing the home saved crop as they allow it to breath and prevents light damage. Potatoes are susceptible to frost but the main problem for the gardener is keeping the temperature low enough; 4°C is an ideal storage temperature but hard to achieve. The higher the temperature the greater the risk of storage rots and sprouting. The tubers will eventually sprout if held for longer than their natural storage period but will sprout prematurely if the storage temperature is too high. If this happens go through the crop and remove the sprouts – this will give you a few extra weeks storage. The question"
+  },
+  {
+    "chunk_id": 390,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "How can sclerotia be transported from infected to clean ground in soil?",
+    "ground_truth": "via implements, footwear or by crops e.g. potato tubers",
+    "context": "The puzzling thing about white rot is that onions can be grown on the same patch of land for years without ever seeing the disease and can make an appearance very early on in fresh ground. This variation all depends on whether sclerotia are present in the soil or not. They can be very easily transported from infected to clean ground in soil via implements, footwear or by crops e.g. potato tubers, and once in the ground can last for over 100 years. Also take note that onion seed is not a carrier but sets can be. Poor rotation is then the prime reason why white rot develops in a field after the initial infection. It you persist with growing Alliums in affected ground the disease just get steadily worse. For these reasons white rot is most commonly found in intensive vegetable growing areas and in cottage gardens and allotments."
+  },
+  {
+    "chunk_id": 494,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What does interference with water uptake manifest as?",
+    "ground_truth": "a rolling and wilting of the upper leaves.",
+    "context": "infected seed or from the soil where Rhizoctonia is commonly found. It is more prevalent on light soils, particularly during dry cold springs if unsprouted seed is present. The tips of the young sprouts are attacked underground becoming blackened causing side shoots to develop which may in turn be attacked and killed. This can lead to delayed emergence or in a severe attack to non- emergence. Where shoots do emerge they can have cankers on the below ground portion of the stem which interferes with water uptake which manifests as a rolling and wilting of the upper leaves. Later in the season a white mould can develop at the base of the stems. This is a disease that tends to build if potatoes are grown too frequently in the one area."
+  },
+  {
+    "chunk_id": 160,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What SC level should be kept for tomatoes to avoid damage?",
+    "ground_truth": "Keep the SC around 150 and don’t allow it to go above 200 as damage will occur above 250.",
+    "context": "The natural background SC of tillage soils is around 10-20 mS/m. In a glasshouse it’s usually higher and for general vegetable production keep the SC between 80-120 or thereabouts. As the SC rises it increasingly restricts plant growth and above 150 damage can be visible on the more susceptible species and certainly above 200 you are heading into the danger zone. Salt tolerance varies within vegetables and stage of growth will also play a part – seedlings are more susceptible than larger plants. Also take note that as the soil dries out the SC rises. Tomatoes are reasonably tolerant – keep the SC around 150 and don’t allow it to go above 200 as damage will occur above 250."
+  },
+  {
+    "chunk_id": 332,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What characteristic do flea beetles share that gives them their name?",
+    "ground_truth": "enlarged hind legs that enable them to jump",
+    "context": "Flea beetle ( Phyllotreta spp ) Flea beetles are a widespread and occasionally serious pest of all seedling brassicas. There are several members of the genus Phyllotreta that are called flea beetles but all share one thing in common: enlarged hind legs that enable them to jump; and hence the name. This characteristic also enables you to identify them; if you spot one on a plant it will only let you come so close before it hops away to safety. The adults overwinter in hedgerows and emerge in spring. If the weather turns warm during April and May crops of direct drilled turnips and swedes can be severely attacked particularly if the growth of the crop is held up at the cotyledon stage by dry weather. The feeding damage is very characteristic – small puncture holes in the leaf that expand in size as the leaf grows. If the attack is heavy an entire sowing can be lost. The adults will also feed on other brassicas but the damage is less damaging on older plants. A second generation of beetles hatch later in the year to cause more trouble from mid-June to late July."
+  },
+  {
+    "chunk_id": 1172,
+    "source": "Agronomy-Manual.pdf",
+    "question": "What is the best time to sample soils?",
+    "ground_truth": "the first week after harvesting a summer crop.",
+    "context": "analysis after every 3-4 years depending on soil type. best time to sample soils is the ﬁrst week after harvesting a summer crop. This will give the farmer a good lead time to correct any deﬁciencies in the soil, 3-6 months before establishing the next crop in summer. applied even on the day of planting and still act as a “buffer” before correcting the soil acidity condition but the ideal/optimum time to apply is at least three months before planting the next"
+  },
+  {
+    "chunk_id": 1864,
+    "source": "IJSRA-2025-0410Article.pdf",
+    "question": "What is the advantage of organic fertilizers made from kitchen waste?",
+    "ground_truth": "They help maintain soil fertility and stabilize soil health.",
+    "context": "Fertilizer Process and Plant Root Structure: As easily as we can make compost or vermicompost from kitchen waste, it can be beneficial for plant root growth. Kitchen waste fertilizer encourages the natural growth of plant roots, as it strengthens the natural elements in the soil in addition to increasing soil health. When the roots are strong, they can absorb more nutrients, thus accelerating plant growth. The use of kitchen waste fertilizer controls the pH of the soil and Comparison of kitchen waste fertilizer and chemical fertilizer: There is a big difference between organic fertilizer and chemical fertilizer. While chemical fertilizers may help plants grow immediately, they can have a negative impact on soil structure and biodiversity. On the other hand, organic fertilizers made from kitchen waste provide long-term benefits. They help maintain soil fertility and stabilize soil health. The advantage of compost fertilizer is that it meets the nutrient needs of the soil and does not use any chemicals or unnatural ingredients. As a result, the strength of the roots and other parts of the plant increases and it is more beneficial for increasing the yield of the plant[26] ."
+  },
+  {
+    "chunk_id": 1363,
+    "source": "Agronomy-Manual.pdf",
+    "question": "How does altitude affect the time from planting to flowering and maturity?",
+    "ground_truth": "Altitude has an effect on the number of days from planting to flowering and maturity because the rate of development of maize is affected by air temperature.",
+    "context": "Altitude has an effect on the number of days from planting to ﬂowering and maturity because the rate of development of maize is affected by air temperature. The warmer the weather, the faster the crop development. Higher temperatures at lower altitudes therefore have the effect of accelerating the development rate. Conversely, the lower air temperatures at higher altitudes retard development and extend the time taken to reach ﬂowering and maturity. The graph below gives a rough guide as to the time from planting to maturity for the four groups of Seed Co maize"
+  },
+  {
+    "chunk_id": 913,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What will increase the degree of rots in pumpkins?",
+    "ground_truth": "excessive amounts [of] nitrogen in the soil.",
+    "context": "The only pests of note are slugs and then only at the planting out stage. which manifests itself as a white powdery coating on the leaves from mid- summer onward. A late attack is of no great importance but an early one will slow plant growth and induce premature senescence. A tank mix of Microthiol Sulphur and SB Invigorator can be effective as can potassium bicarbonate at 5g per litre applied weekly. Pumpkins are susceptible to rots which can occur either pre- or post-harvest. It is not fully understood why they rot. There may be a connection with a powdery mildew attack; Phoma has also been implicated. Pumpkins are not very good at curing damage to their skin and this can allow entry of fungal and bacterial organisms that may initiate rot; so harvest and handle with care. Watch nitrogen levels in the soil – excessive amounts will increase the degree of rots."
+  },
+  {
+    "chunk_id": 1372,
+    "source": "Agronomy-Manual.pdf",
+    "question": "What droppings are found on the leaves?",
+    "ground_truth": "dry horse manure-like droppings called frass",
+    "context": "Start to scout for Fall Army Worm damage at 2 to 3 weeks after planting and make spraying decisions early before damage reaches economic levels. Leaves show typical bullet-shot holes and leaves dry horse manure-like droppings called frass on the leaves particularly the central whorl. Leaves show a typical “window pane” The damage includes holes on the stem causing signiﬁcant stalk lodge, the cob and the tassel. See appendices for more details on Fall Army Worm pest identiﬁcation and control."
+  },
+  {
+    "chunk_id": 498,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What should not be used prior to drilling root crops?",
+    "ground_truth": "don’t use manure or compost prior to drilling root crops.",
+    "context": "variety and forking. In work carried out at Oak Park on sugar beet a reduction in forking was noticed after subsoiling – the suggestion being that compaction along with associated perched water tables may contribute to forking. Gardening books often lay the blame for the disorder on use of farmyard manure but if this is the case then the answer is simple – don’t use manure or compost prior to drilling root crops. Parsnips are more prone to fanging than carrots."
+  },
+  {
+    "chunk_id": 1206,
+    "source": "Agronomy-Manual.pdf",
+    "question": "What happens to the number of plants per hectare when plant spacing is closer?",
+    "ground_truth": "The greater the number of plants per hectare.",
+    "context": "The plant spacing refers to the distance between rows and between plants in the row. The closer the spacing, the greater the number of plants per hectare. The ideal plant spacing depends on the type of crop, variety and the climatic conditions such as rainfall/water availability. Short statured crops like soyabean may be grown at closer spacing than tall, large crops such as maize. In drier areas, wider spacing is preferable in order to provide more soil water to the individual plants. In high rainfall areas, or where there is irrigation, closer spacing is possible. The sowing depth of a crop depends on the size of the seed, the type of soil and the weather. Generally, smaller seeds are sown at a shallower depth than larger seeds,"
+  },
+  {
+    "chunk_id": 1705,
+    "source": "Agronomy-Manual.pdf",
+    "question": "What is the high yield potential of this maize hybrid?",
+    "ground_truth": "up to 13 t/ha",
+    "context": "Early, adapted high yielding maize hybrid Reaches physiological maturity in 135 days at 1300 metres above sea level. Top yielder in the 500 series category in Zimbabwe and perfoms beyond its maturity group under favourable conditions Out-competes most 600 series hybrids on the market. Top yielder in this maturity group with high yield potential of up to 13 t/ha. Long attractive cob (28-30 cm) with semi-flint grain texture and good tip cover High Shelling percentage of about 80% Moderate cob rot tolerance Good Grey Leaf Spot tolerance with moderate Maize Streak Virus tolerance. Plant height 2.50 m and cob height 1.26 m Good standability, can with stand population densities of up to 60 000 plants/ha. Early maturing coupled with medium dry down rate of about 1.8% per week making it suitable for short crop rotations/double cropping set-ups e.g. maize-wheat rotations Recommended for Natural regions II, III and IV."
+  },
+  {
+    "chunk_id": 566,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What is the temperature range during which celery germinates best?",
+    "ground_truth": "celery germinates best between 10-19°C",
+    "context": "Seed to germinate requires oxygen, moisture and a certain minimum temperature. One can divide vegetables into 3 groups in relation to minimum soil temperature requirements for germination: These are minimum temperatures – they will germinate more quickly at higher temperatures. For every vegetable there is an optimum soil temperature for germination, and at that temperature the maximum number of seeds will germinate and in less time than at any other temperature. A good guideline vegetables is 20°C. But take note that there are upper temperature limits for certain crops. Butterhead lettuce will not germinate at temperatures above 25°C, leeks and onions will not germinate well above 21-24°C and celery germinates best between 10-19°C – much higher and it won’t come through. Be careful of covering seed trays with glass or polythene – during hot sunny weather if the temperature of the compost goes above 35-40°C you will end up killing the seed. Consider using newspaper or a polystyrene sheet over the glass in these situations."
+  },
+  {
+    "chunk_id": 142,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What range should soil pH ideally be kept between to ensure maximum availability of nutrients?",
+    "ground_truth": "between 6 and 7",
+    "context": "The pH of a soil is a key component of soil fertility and relates to whether a soil is acid or alkaline. It’s measured using a pH scale of 0-14 the mid-point being 7 (neutral), with any reading below indicating acidity and above denoting alkaline conditions. Whilst most vegetables are reasonably tolerant of variations in pH, we ideally try to keep our soil slightly acidic between 6 and 7 to ensure maximum availability of nutrients (see chart). If your soil is very acidic you can get lock-up of certain nutrients like molybdenum whilst other elements such as aluminium and manganese become overly available to the extent of being toxic. At the other end of the scale very alkaline soils can reduce availability of elements like iron, boron and manganese. To check what pH suits what crop see Table 1 in the Appendix."
+  },
+  {
+    "chunk_id": 421,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What is an important source of inoculum?",
+    "ground_truth": "oilseed rape",
+    "context": "soil. These plant remains could be from any canker-infected brassica but oilseed rape is an important source of inoculum. In the latter case airborne spores which are produced on the stubbles, are discharged in large numbers from September to April during periods of wet weather. They can be carried long distances by wind – over 1000 m – to infect neighbouring swede crops. Infected debris can survive for several years but disease risk diminishes with time. And hence the need for good rotations with other brassica crops to minimise risk of carry-over."
+  },
+  {
+    "chunk_id": 1770,
+    "source": "Fertilizers___Food_Waste_-_Jane_Goodall-s_Roots___Shoots.pdf",
+    "question": "What happens to nutrients when we farm for crops?",
+    "ground_truth": "The nutrients are lost from that soil.",
+    "context": "So, as a plant grows the nutrients are taken from the soil into the structure of the plant itself. In an unfarmed environment these nutrients will return to the soil when the plant naturally dies and rots. However, when we farm for crops we take the plants away from the soil in which they grow and the nutrients are lost from that soil. So, if you want to grow more crops in the same place, you’ll need to put the nutrients back in. This is where fertilizers come in."
+  },
+  {
+    "chunk_id": 544,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "At what soil moisture deficit level will all plants be affected?",
+    "ground_truth": "All plants will be affected as the SMD rises to 50 mm and higher.",
+    "context": "Growth of young plants is affected at about 30mm SMG but all plants will be affected as the SMD rises to 50 mm and higher. Under prolonged drought conditions all the available water gets used up and crops die – this is known as the permanent wilting point. At this juncture there is a very small amount of water left in the soil but plants are unable to extract as it’s held too tightly. Crops dying of drought is rare in Ireland but in the summer of 2018 there were several cases of brassica modules failing to establish and died. You can find out the current soil moisture deficit on the Met Eireann website under Forecasts >"
+  },
+  {
+    "chunk_id": 767,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "When is the maincrop of celery sown and transplanted out?",
+    "ground_truth": "The maincrop is sown in March – April and transplanted out in May – June.",
+    "context": "Celery needs to be propagated and grown on under glass or polythene before being planted out. The early crop has to be propagated under heat otherwise it will bolt. It’s sown in February for planting out from around mid-April. The maincrop is sown in March – April and transplanted out in May – June; a late crop can be planted up to July 20 for harvest in November and December but this crop is a bit of a gamble as it can be damaged by early frosts."
+  },
+  {
+    "chunk_id": 497,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What diseases might cause a root to fork?",
+    "ground_truth": "A disease like Rhizoctonia or Pythium attacking the tap root at an early stage can later cause the root to fork.",
+    "context": "Forking in carrots and parsnips It’s not entirely known what causes forking in root crops but there are a number of theories. Something damages the tip of the radical early on and the developing root subsequently forks. However we're still not sure what that 'something' is that causes the damage. It could be eelworm but there are times when you get the problem despite a nematicide been used. Some growers associate crops drilled close to ley with the disorder and maybe there’s a eelworm link here. It may be a disease like Rhizoctonia or Pythium attacking the tap root at an early stage that later causes the root to fork. We’re not sure that there’s any link between drought stress and forking but Linuron wash-down is a recognised cause as it will damage the root. There was a case where a grower who rolled some of his recently sown carrot fields to conserve moisture discovered forking in his crop subsequently – the crop must have just struck when rolled and the radical was damaged in the process. There is no link between"
+  },
+  {
+    "chunk_id": 150,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "How many kilograms of quicklime are equivalent to 1 tonne of pure ground limestone?",
+    "ground_truth": "560 kg",
+    "context": "Total Neutralising Value (TNV) is an indication of how effective the different liming materials are in neutralising acidity in the soil. The benchmark is pure calcium carbonate which is ranked 100. Ground limestone, which contains a number of impurities, must by law have a minimum TNV of 90. The TNV of quicklime is 178 and 560 kg of quicklime is equivalent to 1 tonne of pure ground limestone. Builders lime has a TNV of 135 and 740 kg is equivalent to 1 tonne of pure ground limestone."
+  },
+  {
+    "chunk_id": 391,
+    "source": "A-Guide-to-Vegetable-Growing---9th-Edition.pdf",
+    "question": "What level of control did Basimid at 570 kg/ha give in trials?",
+    "ground_truth": "up to 70% control",
+    "context": "Various attempts have been made to find a chemical cure with little enough success. Basimid (soil sterilant) at 570 kg/ha gave up to 70% control in trials but cannot be relied upon to give complete or lasting control. Tebuconazole, the constituent of Folicur has given partial control in UK trials applied either as a spray or as a seed dressing. We also have an off-label for the use of Signum. The bottom line is: forget about chemicals and select clean ground for your Allium crops."
+  },
+  {
+    "chunk_id": 1233,
+    "source": "Agronomy-Manual.pdf",
+    "question": "What destroys ridges in winter?",
+    "ground_truth": "Ridges get destroyed in winter by cattle.",
+    "context": "Some of the problems related to tied ridging include: Poor germination of seed on ridges. This may be overcome by timely planting when ridges are wet, or by making an “M” shaped ridge or cup-shaped seed-planting hole to capture Weeding by hand may be difﬁcult, but the key is early may be re-made when the crop is young, primarily as a weeding operation. Thereafter the furrows may be closed mechanically or by hand hoes. Lack of implements. The normal ox-drawn plough may be used for ridging, or a simple disc tie ridger adapted to the plough beam may be made. Ridges get destroyed in winter by cattle. This is true to some ridges are still visible by the end of winter and provide a guide for re-ridging."
+  },
+  {
+    "chunk_id": 1889,
+    "source": "IJSRA-2025-0410Article.pdf",
+    "question": "What positive impact will the use of eco-friendly fertilizers have on the environment?",
+    "ground_truth": "It will have a positive impact on the environment and help reduce global carbon emissions.",
+    "context": "Creating organic fertilizer from kitchen waste is a very effective and environmentally friendly method, which is important for agriculture and environmental conservation. Through this method, farmers can reduce their dependence on chemical fertilizers and increase the fertility of their land through cheap and easily available organic fertilizers. In there are some challenges for the widespread use and production of this fertilizer, such as the diversity of waste future, technological development and innovation are essential to make the process of making fertilizer from kitchen waste more effective and sustainable. If the use of eco-friendly fertilizers increases in agriculture, it will have a positive impact on the environment and help reduce global carbon emissions. Through a coordinated effort by governments, new possibilities for agriculture and the environment."
+  },
+  {
+    "chunk_id": 1234,
+    "source": "Agronomy-Manual.pdf",
+    "question": "What is one of the keys to conservation tillage?",
+    "ground_truth": "The maintenance of surface residues on the field to at least 30% soil cover.",
+    "context": "Much better alternatives to ploughing exist, and these are generally termed conservation tillage systems. The aim with these is to carry out tillage only to the extent that is needed to produce a crop and with the primary aim of conserving soil and water. This is essential in parts of Africa because water is generally the most limiting factor, while the soil is the fundamental resource for all farming activities and must be conserved. One of the keys to conservation tillage is the maintenance of surface residues on the ﬁeld to at least 30% soil cover."
+  }
+]
