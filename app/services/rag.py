@@ -4,6 +4,9 @@ import numpy as np
 import json
 import os
 from app.services.bm25_retriever import BM25Retriever
+from flashrank import Ranker,RerankRequest
+from concurrent.futures import ThreadPoolExecutor
+import time
 
 class FAISSRAG:
 
@@ -11,7 +14,7 @@ class FAISSRAG:
         self.model = SentenceTransformer(model_name)
 
           # 🔥 RERANKER ADDED
-        self.reranker = CrossEncoder("BAAI/bge-reranker-base")
+        self.reranker = Ranker(model_name="ms-marco-MiniLM-L-12-v2")
 
         self.docs = []
         self.metadata = []
@@ -29,15 +32,15 @@ class FAISSRAG:
         self.docs = [item["text"] for item in data]
         self.metadata = data
        
-        print(f"Loaded {len(self.docs)} clean chunks")
+        # print(f"Loaded {len(self.docs)} clean chunks")
 
     def build_index(self, index_path="vector_db/faiss.index"):
-
+        self.bm25.load("data/processed/chunks.json")
         if os.path.exists(index_path):
             self.index = faiss.read_index(index_path)
             print("Loaded FAISS index from disk")
-
-            self.bm25.load("data/processed/chunks.json")
+           
+            
 
             return
 
@@ -58,61 +61,11 @@ class FAISSRAG:
         os.makedirs("vector_db", exist_ok=True)
         faiss.write_index(self.index, index_path)
 
+       
+
         print("Built and saved FAISS index")
 
-    # def search(self, query, k=20, final_k=3):  
-    #     # -------------------------
-    #     # 1. FAISS retrieval (FAST)
-    #     # -------------------------
-    #     q_vec = self.model.encode([query], normalize_embeddings=True)
-    #     q_vec = np.array(q_vec).astype("float32")
-
-    #     scores, indices = self.index.search(q_vec, k)
-
-    #     candidates = []
-
-    #     for idx, score in zip(indices[0], scores[0]):
-
-    #         if idx == -1:
-    #             continue
-
-    #         candidates.append({
-    #             "text": self.docs[idx],
-    #             "source": self.metadata[idx]["source"],
-    #             "faiss_score": float(score)
-    #         })
-
-
-    #     if not candidates:
-    #         return [],0.0
-        
-    #     # -------------------------
-    #     # 2. RERANKING (ACCURACY)
-    #     # -------------------------
-        
-    #     pairs = [(query, c["text"]) for c in candidates]
-    #     rerank_scores = self.reranker.predict(pairs)
-
-    #      # attach rerank score
-    #     for i in range(len(candidates)):
-    #         candidates[i]["rerank_score"] = float(rerank_scores[i])
-
-    #     # sort by reranker (IMPORTANT)
-    #     candidates = sorted(
-    #         candidates,
-    #         key=lambda x: x["rerank_score"],
-    #         reverse=True
-    #     )
-
-    #      # -------------------------
-    #     # 3. FINAL FILTER
-    #     # -------------------------
-    #     top_results = candidates[:final_k]
-
-    #     best_score = top_results[0]["rerank_score"]
-
-    #     return top_results, best_score
-
+   
     def normalize(self,scores):
         mn = min(scores)
         mx = max(scores)
@@ -125,33 +78,38 @@ class FAISSRAG:
             for x in scores
         ]
     
-    def search(self, query, k=20, final_k=3):
-        
-        # --------------------
-        # 1. FAISS
-        # --------------------
-        q_vec = self.model.encode([query], normalize_embeddings=True)
-        q_vec = np.array(q_vec).astype("float32")
+    def _faiss_search(self,query,k):
+        q_vec =self.model.encode([query],normalize_embeddings=True)
+        q_vec= np.array(q_vec).astype("float32")
 
-        scores, indices = self.index.search(q_vec, k)
+        scores, indices = self.index.search(q_vec,k)
 
-        faiss_results = []
+        results=[]
 
         for idx, score in zip(indices[0], scores[0]):
-
-            if idx == -1:
+            if idx== -1:
                 continue
-
-            faiss_results.append({
+            results.append({
                 "text": self.docs[idx],
+                "chunk_id": self.metadata[idx]["chunk_id"],
                 "source": self.metadata[idx]["source"],
                 "faiss_score": float(score)
             })
+        return results    
 
-        # --------------------
-        # 2. BM25
-        # --------------------
-        bm25_results = self.bm25.search(query, k=k)
+    def search(self, query, k=20, final_k=3):
+        t0 = time.time()
+        
+        with ThreadPoolExecutor() as executor:
+
+            faiss_future= executor.submit(self._faiss_search ,query, k)
+            bm25_future = executor.submit(self.bm25.search,query ,k)
+
+            faiss_results = faiss_future.result()
+            bm25_results = bm25_future.result()
+        t1 = time.time()
+        print(f"[TIMING] Retrieval (FAISS+BM25): {(t1 - t0)*1000:.2f} ms")
+      
         # --------------------
         # NORMALIZE BM25
         # --------------------
@@ -165,66 +123,106 @@ class FAISSRAG:
 
             for r, score in zip(bm25_results, normalized_scores):
                 r["bm25_score"] = score 
-
+            
+        t2 = time.time()
+        print(f"[TIMING] BM25 normalization: {(t2 - t1)*1000:.2f} ms")
 
         # --------------------
-        # 3. MERGE (HYBRID)
+        #  3. HYBRID MERGE (FAISS + BM25)
         # --------------------
-        merged = {}
 
+        all_candidates = {}
+
+        #1. FAISS results 
         for r in faiss_results:
-            merged[r["text"]] = {
-                **r,
-                "hybrid_score":  0.7 * r["faiss_score"]
+            all_candidates[r["text"]] ={
+                "text": r["text"],
+                "chunk_id": r["chunk_id"],
+                "source": r["source"],
+                "faiss_score": r["faiss_score"],
+                "bm25_score": 0.0
             }
-        print("\n=== BM25 DEBUG ===")
+        # 2. BM25 results
         for r in bm25_results:
-            print(r["text"][:80], " | score:", r["bm25_score"])
+            if r["text"] in all_candidates:
+                all_candidates[r["text"]]["bm25_score"]=r["bm25_score"]
 
-            if r["text"] in merged:
-                merged[r["text"]]["hybrid_score"] += (
-                    0.3 * r["bm25_score"]
-                )
             else:
-                merged[r["text"]] = {
-                    **r,
-                    "hybrid_score": 0.3 * r["bm25_score"]
+                all_candidates[r["text"]] = {
+                    "text": r["text"],
+                    "chunk_id": r["chunk_id"],
+                    "source": r["source"],
+                    "faiss_score": 0.0,
+                    "bm25_score": r["bm25_score"]
                 }
+       
 
-        candidates = list(merged.values())
+        # 4. FINAL CANDIDATES
+        candidates = list(all_candidates.values())   
 
-        # hybrid ranking first
+        # 3. HYBRID SCORE
+        for c in all_candidates.values():
+            c["hybrid_score"] = (
+                0.6 * c["faiss_score"] +
+                0.4 * c["bm25_score"]
+            )
+        # sort by hybrid score BEFORE reranker
         candidates = sorted(
             candidates,
             key=lambda x: x["hybrid_score"],
             reverse=True
         )
-        print("\n=== HYBRID DEBUG ===")
-        for c in candidates[:5]:
-            print(c["text"][:80], " | hybrid:", c["hybrid_score"])
+        t3 = time.time()
+        print(f"[TIMING] Merge + hybrid scoring: {(t3 - t2)*1000:.2f} ms")
+        
+      
+        docs = [
+            {
+            "id": i,
+            "text": c["text"],
+            "chunk_id": c["chunk_id"],
+            "source": c["source"],
+            "faiss_score": c["faiss_score"],
+            "bm25_score": c["bm25_score"]
+            }
+            for i, c in enumerate(candidates)
+        ]
+        request = RerankRequest(
+            query=query,
+            passages=docs
+        )
 
+        t4 = time.time()
 
-        # --------------------
-        # 4. RERANKER
-        # --------------------
-        pairs = [(query, c["text"]) for c in candidates]
+        results = self.reranker.rerank(request)
 
-        rerank_scores = self.reranker.predict(pairs, batch_size=32)
-
-        for c, s in zip(candidates, rerank_scores):
-            c["rerank_score"] = float(s)
-
+        t5 = time.time()
+        print(f"[TIMING] FlashRank rerank: {(t5 - t4)*1000:.2f} ms")
+  
+        reranked_candidates = []
+        for r in results:
+            idx = r["id"]
+            original = candidates[idx]
+            reranked_candidates.append({
+                "text": original["text"],
+                "chunk_id": original["chunk_id"],
+                "source": original["source"],
+                "faiss_score": float(original["faiss_score"]),
+                "bm25_score": float(original["bm25_score"]),
+                "rerank_score": float(r["score"])
+            })
         # sort by reranker
-        candidates = sorted(
-            candidates,
+        reranked_candidates = sorted(
+            reranked_candidates,
             key=lambda x: x["rerank_score"],
             reverse=True
         )
-        print("\n=== RERANK DEBUG ===")
-        for c in candidates[:5]:
-            print(c["text"][:80], " | rerank:", c["rerank_score"])
+        t6 = time.time()
+        print(f"[TIMING] Final formatting: {(t6 - t5)*1000:.2f} ms")
 
-        top = candidates[:final_k]
+        print(f"[TOTAL TIME]: {(t6 - t0)*1000:.2f} ms")
+        
+        top = reranked_candidates[:final_k]
 
         best_score = top[0]["rerank_score"] if top else -999
 

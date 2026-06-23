@@ -8,12 +8,15 @@ class BM25Retriever:
 
     def __init__(self):
         self.docs = []
+        self.metadata = []
         self.bm25 = None
 
     def load(self, path):
 
         with open(path, "r", encoding="utf-8") as f:
             data = json.load(f)
+        
+        self.metadata = data
 
         self.docs = [x["text"] for x in data]
 
@@ -35,7 +38,15 @@ class BM25Retriever:
         return [
             {
                 "text": self.docs[i],
-                "bm25_score": float(scores[i])
+
+                "chunk_id":
+                    self.metadata[i]["chunk_id"],
+
+                "source":
+                    self.metadata[i].get("source"),
+
+                "bm25_score":
+                    float(scores[i])
             }
             for i in top_k
         ]

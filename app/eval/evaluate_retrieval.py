@@ -6,7 +6,7 @@ from sentence_transformers import CrossEncoder
 
 from app.services.rag import rag
 from app.services.bm25_retriever import BM25Retriever
-
+import time
 
 
 # ==========================
@@ -113,6 +113,7 @@ def evaluate(dataset, mode):
 
     recalls=[]
     mrrs=[]
+    latencies = []
 
 
     for item in tqdm(dataset):
@@ -126,6 +127,10 @@ def evaluate(dataset, mode):
         # --------------------
         # FAISS
         # --------------------
+        # ==========================
+        # RETRIEVAL LATENCY START
+        # ==========================
+        t0 = time.time()
 
         faiss_results=faiss_search(
             question,
@@ -170,13 +175,13 @@ def evaluate(dataset, mode):
                 merged.values()
             )
        
-
+        retrieval_time = time.time() - t0
         # --------------------
         # RERANKER
         # --------------------
-
+        rerank_time = 0
         if "reranker" in mode:
-
+            t1 = time.time()
 
             pairs=[
                 (
@@ -205,8 +210,7 @@ def evaluate(dataset, mode):
                 key=lambda x:x["score"],
                 reverse=True
             )
-
-
+            rerank_time = time.time() - t1
 
         ids=[
             r["chunk_id"]
@@ -230,6 +234,14 @@ def evaluate(dataset, mode):
             )
         )
 
+        # ==========================
+        # STORE LATENCY (IMPORTANT)
+        # ==========================
+        latencies.append({
+        "retrieval_time": retrieval_time,
+        "rerank_time": rerank_time,
+        "total_time": retrieval_time + rerank_time
+    })
 
 
     print("\n===================")
@@ -245,6 +257,10 @@ def evaluate(dataset, mode):
         "MRR:",
         np.mean(mrrs)
     )
+    print("\nLatency Results")
+    print("Retrieval time:", np.mean([x["retrieval_time"] for x in latencies]))
+    print("Rerank time:", np.mean([x["rerank_time"] for x in latencies]))
+    print("Total time:", np.mean([x["total_time"] for x in latencies]))
 
 
 

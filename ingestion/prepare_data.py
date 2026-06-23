@@ -1,10 +1,10 @@
 import json
 from pathlib import Path
-from collections import defaultdict
 import fitz
 import re
 import numpy as np
 from sentence_transformers import SentenceTransformer
+from collections import defaultdict
 
 
 # =========================
@@ -14,242 +14,453 @@ model = SentenceTransformer("BAAI/bge-base-en-v1.5")
 
 
 # =========================
-# 1. PDF EXTRACTION
+# NOISE RULES
 # =========================
-def extract_pages(pdf_path):
+
+def is_page_number(text):
+    return bool(re.fullmatch(r"\d+", text.strip()))
+
+
+def is_author_block(text):
+
+    text = text.strip()
+
+    # Dr / Prof / PhD
+    if re.search(r"\b(Dr|Prof|PhD)\b", text):
+        return True
+
+    # many commas = author list
+    if text.count(",") >= 2 and len(text.split()) < 30:
+        return True
+
+    # names with numbers
+    if re.search(r"\d+\s*,?\s*\d*", text):
+        if text.count(",") > 1:
+            return True
+
+    # university departments
+    keywords = [
+        "Department",
+        "University",
+        "Faculty",
+        "Institute"
+    ]
+
+    if any(k in text for k in keywords):
+        return True
+
+
+    # many capitalized short words
+    words = text.split()
+
+    if len(words) < 12:
+        caps = sum(
+            1 for w in words
+            if w[:1].isupper()
+        )
+
+        if caps >= len(words)*0.7:
+            return True
+
+
+    return False
+
+
+
+def is_bad_line(text):
+
+    text = text.strip()
+
+
+    if len(text) < 5:
+        return True
+
+
+    if is_page_number(text):
+        return True
+
+
+    if re.match(
+        r"^(Figure|Table|Page|Keywords|References)",
+        text,
+        re.I
+    ):
+        return True
+
+
+    if is_author_block(text):
+        return True
+
+
+    if sum(c.isalpha() for c in text) < 10:
+        return True
+
+
+    return False
+
+
+
+# =========================
+# EXTRACTION WITH LAYOUT
+# =========================
+
+def extract_structured(pdf_path):
+
     doc = fitz.open(pdf_path)
 
-    pages = []
-    freq = defaultdict(int)
-
-    for page in doc:
-        text = page.get_text("text")
-
-        # remove weird control chars (VERY IMPORTANT FIX)
-        text = re.sub(r"[\x00-\x1F\x7F]", " ", text)
-
-        lines = [l.strip() for l in text.split("\n") if l.strip()]
-        pages.append(lines)
-
-        for l in set(lines):
-            freq[l] += 1
-
-    return pages, freq, len(doc)
+    blocks=[]
+    freq=defaultdict(int)
 
 
-# =========================
-# 2. NOISE DETECTION
-# =========================
-def detect_noise_lines(freq, total_pages, threshold=0.6):
-    return {
-        line for line, f in freq.items()
-        if f / total_pages >= threshold
-    }
+    for page_id,page in enumerate(doc):
+
+        height = page.rect.height
+
+        data = page.get_text("dict")
 
 
-# =========================
-# 3. CLEAN PAGES
-# =========================
-def clean_pages(pages, noise_lines):
-    out = []
+        for block in data["blocks"]:
 
-    for lines in pages:
-        filtered = []
-
-        for line in lines:
-            line = line.strip()
-
-            if line in noise_lines:
+            if "lines" not in block:
                 continue
 
-            if re.fullmatch(r"\d{1,4}", line):
+
+            x0,y0,x1,y1 = block["bbox"]
+
+
+            # remove footer/header by position
+            if y0 < 40:
                 continue
 
-            if len(line) < 3:
+            if y1 > height-40:
                 continue
 
-            filtered.append(line)
 
-        out.append(" ".join(filtered))
 
-    return "\n".join(out)
+            lines=[]
+
+
+            for line in block["lines"]:
+
+                text=" ".join(
+                    span["text"]
+                    for span in line["spans"]
+                ).strip()
+
+
+                text=re.sub(
+                    r"[\x00-\x1F\x7F]",
+                    " ",
+                    text
+                )
+
+                text=re.sub(
+                    r"\s+",
+                    " ",
+                    text
+                ).strip()
+
+
+                if not text:
+                    continue
+
+
+                if is_bad_line(text):
+                    continue
+
+
+                lines.append(text)
+
+                freq[text]+=1
+
+
+
+            if lines:
+
+                block_text=" ".join(lines)
+
+
+                blocks.append(
+                    {
+                    "page":page_id,
+                    "text":block_text,
+                    "x0":x0,
+                    "y0":y0
+                    }
+                )
+
+
+    return blocks,freq,len(doc)
+
 
 
 # =========================
-# 4. NORMALIZE TEXT
+# REMOVE REPEATED HEADER
 # =========================
-def normalize_text(text):
-    text = re.sub(r"-\n", "", text)
-    text = re.sub(r"\s+", " ", text)
-    text = re.sub(r"\n+", " ", text)
 
-    # fix broken unicode artifacts like \u0001 garbage
-    text = re.sub(r"[^\x20-\x7E\u00A0-\uFFFF]", " ", text)
+def remove_repeated(blocks,freq,total_pages):
 
-    return text.strip()
+    bad=set()
+
+    for text,count in freq.items():
+
+        if count/total_pages > 0.5:
+            bad.add(text)
+
+
+    return [
+        b for b in blocks
+        if b["text"] not in bad
+    ]
+
 
 
 # =========================
-# 5. SENTENCE SPLIT (IMPROVED)
+# SORT
 # =========================
-def split_sentences(text):
-    sentences = re.split(r'(?<=[.!?])\s+', text)
 
-    cleaned = []
-    for s in sentences:
-        s = s.strip()
+def sort_blocks(blocks):
 
-        if len(s) < 25:
+    return sorted(
+        blocks,
+        key=lambda x:
+        (x["page"],x["y0"],x["x0"])
+    )
+
+
+
+# =========================
+# EMBEDDINGS
+# =========================
+
+def embed(texts):
+
+    return model.encode(
+        texts,
+        normalize_embeddings=True
+    )
+
+
+
+# =========================
+# SEMANTIC CHUNKING
+# =========================
+
+def chunk_blocks(
+        blocks,
+        threshold=0.78,
+        max_words=250
+):
+
+
+    blocks=sort_blocks(blocks)
+
+
+    texts=[
+        b["text"]
+        for b in blocks
+    ]
+
+
+    pages=[
+        b["page"]
+        for b in blocks
+    ]
+
+
+    embeddings=embed(texts)
+
+
+    chunks=[]
+
+    current=[]
+    centroid=None
+    size=0
+
+
+
+    for i,text in enumerate(texts):
+
+        emb=embeddings[i]
+
+        words=len(text.split())
+
+
+        if centroid is None:
+
+            current=[(text,pages[i])]
+            centroid=emb
+            size=words
+
             continue
 
-        if len(re.findall(r"[a-zA-Z]", s)) < 5:
-            continue
-
-        cleaned.append(s)
-
-    return cleaned
 
 
-# =========================
-# 6. EMBEDDING
-# =========================
-def embed(sentences):
-    return model.encode(sentences, normalize_embeddings=True)
+        similarity=float(
+            np.dot(
+                centroid,
+                emb
+            )
+        )
 
 
-# =========================
-# 7. SEMANTIC CHUNKING (FIXED STABLE VERSION)
-# =========================
-def semantic_chunk(sentences, threshold=0.78, max_words=180):
-    embeddings = embed(sentences)
 
-    chunks = []
+        if (
+            similarity < threshold
+            or size+words > max_words
+        ):
 
-    current_chunk = [sentences[0]]
-    current_embs = [embeddings[0]]
 
-    # FIX: use incremental centroid (more stable than np.mean each time)
-    centroid = embeddings[0].copy()
+            chunks.append(current)
 
-    word_count = len(sentences[0].split())
 
-    for i in range(1, len(sentences)):
-        sent = sentences[i]
-        emb = embeddings[i]
+            current=[
+                (text,pages[i])
+            ]
 
-        sim = np.dot(centroid, emb)
-        sent_words = len(sent.split())
+            centroid=emb
+            size=words
 
-        # chunk break conditions
-        if sim < threshold or word_count + sent_words > max_words:
 
-            chunks.append(" ".join(current_chunk))
-
-            # reset
-            current_chunk = [sent]
-            current_embs = [emb]
-            centroid = emb.copy()
-            word_count = sent_words
 
         else:
-            current_chunk.append(sent)
-            current_embs.append(emb)
 
-            # incremental centroid update (IMPORTANT FIX)
-            centroid = (centroid * (len(current_embs) - 1) + emb) / len(current_embs)
-            centroid = centroid / np.linalg.norm(centroid)
-
-            word_count += sent_words
-
-    if current_chunk:
-        chunks.append(" ".join(current_chunk))
-
-    return chunks
+            current.append(
+                (text,pages[i])
+            )
 
 
-# =========================
-# 8. DEDUP (FIXED REAL SEMANTIC VERSION)
-# =========================
-def deduplicate_chunks(chunks, threshold=0.93):
-    if not chunks:
-        return []
+            centroid=(
+                centroid*len(current)
+                +emb
+            )/(len(current)+1)
 
-    embeddings = embed(chunks)
 
-    kept = []
-    used = set()
+            centroid /= (
+                np.linalg.norm(centroid)+1e-8
+            )
 
-    for i in range(len(chunks)):
-        if i in used:
-            continue
 
-        base = chunks[i]
-        used.add(i)
+            size+=words
 
-        for j in range(i + 1, len(chunks)):
-            if j in used:
-                continue
 
-            sim = np.dot(embeddings[i], embeddings[j])
 
-            if sim >= threshold:
-                used.add(j)
+    if current:
+        chunks.append(current)
 
-        kept.append(base)
 
-    return kept
+
+    return [
+        {
+        "text":
+            " ".join(
+                t for t,_ in c
+            ),
+
+        "pages":
+            list(
+                set(
+                    p for _,p in c
+                )
+            )
+        }
+
+        for c in chunks
+    ]
+
+
 
 
 # =========================
 # PIPELINE
 # =========================
-def process_pdf(pdf_path):
-    pages, freq, total_pages = extract_pages(pdf_path)
 
-    noise = detect_noise_lines(freq, total_pages)
+def process_pdf(path):
 
-    raw = clean_pages(pages, noise)
-    text = normalize_text(raw)
+    blocks,freq,pages = extract_structured(path)
 
-    sentences = split_sentences(text)
 
-    if len(sentences) == 0:
+    blocks = remove_repeated(
+        blocks,
+        freq,
+        pages
+    )
+
+
+    if not blocks:
         return []
 
-    chunks = semantic_chunk(sentences)
 
-    chunks = deduplicate_chunks(chunks)
+    return chunk_blocks(blocks)
 
-    return chunks
 
 
 # =========================
 # RUN
 # =========================
-pdf_folder = Path("data/raw/pdfs")
-docs = []
 
-for pdf_file in pdf_folder.glob("*.pdf"):
-    print(f"Processing: {pdf_file.name}")
+pdf_folder=Path(
+    "data/raw/pdfs"
+)
 
-    chunks = process_pdf(pdf_file)
+output=[]
 
-    for idx, c in enumerate(chunks):
-        docs.append({
-            "text": c,
-            "source": pdf_file.name,
-            "type": "farming_knowledge",
-            "chunk_id": idx,
-            "clean": True
-        })
+gid=0
 
 
-# =========================
-# SAVE
-# =========================
-output_path = "data/processed/chunks.json"
+for pdf in pdf_folder.glob("*.pdf"):
 
-with open(output_path, "w", encoding="utf-8") as f:
-    json.dump(docs, f, indent=2)
+    print(
+        "Processing:",
+        pdf.name
+    )
 
-print(f"\nSaved {len(docs)} semantic chunks")
+
+    chunks=process_pdf(pdf)
+
+
+    for i,c in enumerate(chunks):
+
+        output.append(
+            {
+            "chunk_id":gid,
+            "local_id":i,
+            "text":c["text"],
+            "pages":c["pages"],
+            "source":pdf.name,
+            "type":"farming_knowledge",
+            "clean":True
+            }
+        )
+
+        gid+=1
+
+
+
+Path(
+    "data/processed"
+).mkdir(
+    parents=True,
+    exist_ok=True
+)
+
+
+
+with open(
+    "data/processed/chunks.json",
+    "w",
+    encoding="utf-8"
+) as f:
+
+    json.dump(
+        output,
+        f,
+        indent=2,
+        ensure_ascii=False
+    )
+
+
+print(
+    "Saved chunks:",
+    len(output)
+)

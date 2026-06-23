@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+
+faiss.index
+debug_logs.jsonl
+
+venv/
+.env
+
+.DS_Store
+# git rm --cached  venv/  to stop tracking file
