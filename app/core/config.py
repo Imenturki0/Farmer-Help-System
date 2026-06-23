@@ -1,7 +1,7 @@
 import os
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434/api/generate")
-MODEL_NAME = os.getenv("MODEL_NAME", "gemma4:e2b")
+MODEL_NAME = os.getenv("MODEL_NAME", "llama3:latest")
 
 TEMPERATURE = float(os.getenv("TEMPERATURE", "0.3"))
 TOP_K = int(os.getenv("TOP_K", "20"))

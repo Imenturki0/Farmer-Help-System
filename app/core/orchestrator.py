@@ -1,8 +1,9 @@
 from app.services.weather import get_weather
 from app.services.rag import rag
-from app.services.llm import generate_answer
+from app.services.llm import generate_answer,generate_stream
 import json
-
+from fastapi.responses import StreamingResponse
+from app.core.router import llm_route
 # -------------------------
 # FORMAT CONTEXT
 # -------------------------
@@ -13,34 +14,7 @@ def format_context(results):
     return "\n\n".join(r["text"] for r in results[:3])
 
 
-# -------------------------
-# RAG USAGE DECISION
-# -------------------------
-def should_use_rag(results):
-    if not results:
-        return False
-
-    scores = [r["rerank_score"] for r in results]
-
-    best = scores[0]
-
-    # 1. absolute failure case
-    if best < 0.2:
-        return False
-
-    # 2. average quality check
-    avg = sum(scores) / len(scores)
-    if avg < 0.15:
-        return False
-
-    # 3. variance check (important)
-    # if everything is flat AND low → bad retrieval
-    import numpy as np
-    if np.std(scores) < 0.02 and best < 0.4:
-        return False
-
-    return True
-
+    
 def log_debug(data):
     with open("debug_logs.jsonl", "a") as f:
         f.write(json.dumps(data) + "\n")
@@ -50,84 +24,208 @@ def log_debug(data):
 # -------------------------
 def handle_question(question):
 
+
     text = question.text
 
     # -------------------------
-    # 1. RAG SEARCH
+    # 1. ROUTING
     # -------------------------
-    rag_results, best_score = rag.search(text, k=20, final_k=3)
+    route, confidence= llm_route(text)
 
-    use_rag = should_use_rag(rag_results)
+    if confidence < 0.6:
+        route = "rag"
 
-    print("\n" + "=" * 50)
-    print("QUESTION:", text)
-    if rag_results:
-            print(f"BEST RERANK SCORE: {rag_results[0]['rerank_score']:.3f}")
+    print(
+    "ROUTE:",
+    route,
+    "CONF:",
+    confidence
+)
 
-    if use_rag:
-        print("✅ RAG USED")
-        context = format_context(rag_results)
 
-        for i, r in enumerate(rag_results, 1):
-            score = r.get("rerank_score", 0.0)
-            print(f"\nChunk {i} | Score: {score:.3f}")
-            print(r["text"])
-
-    else:
-        print("❌ RAG SKIPPED")
-        context = ""
-
-    print("=" * 50 + "\n")
-
-    # -------------------------
-    # 2. WEATHER (ONLY IF RAG USED)
-    # -------------------------
+    rag_results = []
+    best_score = -1
+    context = ""
     weather = ""
 
-    if use_rag:
+    print("=" * 50)
+    print("QUESTION:", text)
+    print("ROUTE:", route)
+    
+    # -------------------------
+    # 2. CHAT
+    # -------------------------
+    if route == "chat":
+        return generate_answer(f"""
+            You are a friendly farming assistant.
+
+            User said: {text}
+
+            Respond naturally and briefly.
+            """)
+     # -------------------------
+    # 3. WEATHER
+    # -------------------------
+    if route == "weather":
         try:
             weather_data = get_weather(question.lat, question.lon)
             current = weather_data.get("current_weather", {})
 
             weather = f"""
-Temperature: {current.get('temperature', 0)}°C
-Wind: {current.get('windspeed', 0)} km/h
-"""
+            Temperature: {current.get('temperature', 0)}°C
+            Wind: {current.get('windspeed', 0)} km/h
+            """
         except Exception as e:
             print("Weather error:", e)
 
+        return generate_answer(f"""
+                You are a farming assistant.
+                Explain this weather for farming:
+                {weather}
+                """)
     # -------------------------
-    # 3. PROMPT (CLEANER + MORE CONTROLLED)
+    # 4. RAG
+    # -------------------------
+    if route == "rag":
+        rag_results, best_score = rag.search(text, k=10, final_k=5)
+
+        if rag_results and best_score > 0.3:
+            context = "\n\n".join(r["text"] for r in rag_results[:3])
+        else:
+            context = ""
+    # -------------------------
+    # 5. UNKNOWN
+    # -------------------------
+    if route == "unknown":
+        return generate_answer("""
+       The user asked something outside farming.
+
+Politely respond:
+"I can only help with farming-related questions like crops, soil, fertilizers, irrigation, and plant diseases."
+Do NOT use quotes.
+Keep the response short and natural.
+        """)
+    # -------------------------
+    # 6. FINAL PROMPT (RAG + fallback)
     # -------------------------
     prompt = f"""
-You are a friendly farming assistant.
+    You are a friendly farming assistant.
 
-RULES:
-- You are ONLY allowed to answer farming and agriculture-related questions
-- If the question is not about farming, politely say:
-  "I can only help with farming-related questions."
-- Be friendly and helpful
-- Do NOT hallucinate or guess
-- Use context only if relevant
+    RULES:
+    - Only answer farming-related questions
+    - Do not hallucinate
+    - Use context if available
 
-If the user greets you (hi, hello), respond
+    User Question:
+    {text}
+
+    Context:
+    {context if context else "No relevant farming context found."}
+    """
+    log_debug({
+        "question": text,
+        "route": route,
+        "best_score": best_score,
+        "retrieved": [r["chunk_id"] for r in rag_results[:5]]
+    })
+
+    return generate_answer(prompt)
+   
+  
+
+   
+
+def ask_stream(question):
+    
+    rag_results, best_score = rag.search(question.text, k=20, final_k=3)
+
+    context = "\n\n".join(r["text"] for r in rag_results[:3])
+
+    weather = ""
+
+    prompt = f"""
+You are a farming assistant.
 
 User Question:
-{text}
-
+{question.text}
 
 Context:
-{context if context else "No relevant farming context found."}
-
-Weather:
-{weather if weather else "Not relevant"}
+{context}
 """
-    log_debug({
-    "question": text,
-    "best_score": best_score,
-    "retrieved": rag_results
-})
-    # -------------------------
-    # 4. GENERATE
-    # -------------------------
-    return generate_answer(prompt)
+
+    return StreamingResponse(
+        generate_stream(prompt),
+        media_type="text/plain"
+    )
+
+
+def handle_question_steam(question):
+
+    text =question.text
+
+    route ,confidence= llm_route(text)
+
+    if confidence < 0.6 :
+        route ="rag"
+
+    rag_results=[]
+    context=""
+    weather =""
+
+    if route=="chat":
+        prompt =f"""
+you are friendly farming assistant.
+
+User said:{text}
+
+respond naturally and briefly.
+"""
+        return StreamingResponse(generate_stream(prompt),media_type="text/plain")
+    
+    if route=="weather":
+        weather_data=get_weather(question.lat,question.lon)
+        current = weather_data.get("current_weather",{})
+
+        weather = f"""
+        Temperature: {current.get('temperature', 0)}°C
+        Wind: {current.get('windspeed', 0)} km/h
+        """
+
+        prompt = f"""
+        You are a farming assistant.
+        Explain this weather for farming:
+
+        {weather}
+        """
+
+        return StreamingResponse(generate_stream(prompt), media_type="text/plain")
+    
+    if route == "rag":
+        rag_results, best_score = rag.search(text, k=10, final_k=5)
+
+        if rag_results and best_score > 0.3:
+            context = "\n\n".join(r["text"] for r in rag_results[:3])
+        else:
+            context = ""
+
+    if route == "unknown":
+        prompt = """
+        You are a farming assistant.
+
+        Politely say you only help with farming topics like crops, soil, fertilizers, irrigation, and plant diseases.
+
+        Keep it short and natural.
+        """
+        return StreamingResponse(generate_stream(prompt), media_type="text/plain")
+
+    prompt = f"""
+    You are a friendly farming assistant.
+
+    User Question:
+    {text}
+
+    Context:
+    {context if context else "No relevant farming context found."}
+    """
+
+    return StreamingResponse(generate_stream(prompt), media_type="text/plain")

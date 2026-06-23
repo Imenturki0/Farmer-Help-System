@@ -1,9 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.schemas import Question
-from app.core.orchestrator import handle_question
+from app.core.orchestrator import handle_question,handle_question_steam
 from app.services.rag import rag
-
+# from fastapi.responses import StreamingResponse
+from fastapi.responses import PlainTextResponse
 app = FastAPI()
 
 app.add_middleware(
@@ -46,8 +47,14 @@ def startup():
 def ask_farm(question: Question):
     try:
         answer = handle_question(question)
-        return {"answer": answer}
+        return PlainTextResponse(
+            content=answer
+        )
 
     except Exception as e:
         logger.error(f"Error: {e}")
         return {"error": "Internal server error"}
+    
+@app.post("/ask-stream")
+def ask_stream_route(question: Question):
+   return  handle_question_steam(question)
