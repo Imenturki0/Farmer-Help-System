@@ -78,6 +78,49 @@ class FAISSRAG:
             for x in scores
         ]
     
+    def rrf_fusion(self,faiss_results,bm25_results,k=60):
+        fused ={}
+
+        #FAISS ranking
+        for rank, r in enumerate(faiss_results):
+            cid =r["chunk_id"]
+
+            fused[cid]={
+                "text": r["text"],
+                "chunk_id": cid,
+                "source": r["source"],
+                "faiss_score": r["faiss_score"],
+                "bm25_score": 0.0,
+                "rrf_score": 1 / (k + rank + 1)
+            }
+            # BM25 ranking
+        for rank, r in enumerate(bm25_results):
+
+            cid = r["chunk_id"]
+
+            if cid in fused:
+
+                fused[cid]["bm25_score"] = r["bm25_score"]
+
+                fused[cid]["rrf_score"] += (
+                    1 / (k + rank + 1)
+                )
+
+            else:
+
+                fused[cid] = {
+                    "text": r["text"],
+                    "chunk_id": cid,
+                    "source": r["source"],
+                    "faiss_score": 0.0,
+                    "bm25_score": r["bm25_score"],
+                    "rrf_score": 1 / (k + rank + 1)
+                }
+
+
+        return list(fused.values())
+
+    
     def _faiss_search(self,query,k):
         q_vec =self.model.encode([query],normalize_embeddings=True)
         q_vec= np.array(q_vec).astype("float32")
@@ -96,6 +139,7 @@ class FAISSRAG:
                 "faiss_score": float(score)
             })
         return results    
+    
 
     def search(self, query, k=20, final_k=3):
         t0 = time.time()
@@ -110,72 +154,87 @@ class FAISSRAG:
         t1 = time.time()
         print(f"[TIMING] Retrieval (FAISS+BM25): {(t1 - t0)*1000:.2f} ms")
       
-        # --------------------
-        # NORMALIZE BM25
-        # --------------------
+        # # --------------------
+        # # NORMALIZE BM25
+        # # --------------------
 
-        if bm25_results:
-            bm_scores=[
-                r["bm25_score"]
-                for r in bm25_results
-            ]
-            normalized_scores = self.normalize(bm_scores)
+        # if bm25_results:
+        #     bm_scores=[
+        #         r["bm25_score"]
+        #         for r in bm25_results
+        #     ]
+        #     normalized_scores = self.normalize(bm_scores)
 
-            for r, score in zip(bm25_results, normalized_scores):
-                r["bm25_score"] = score 
+        #     for r, score in zip(bm25_results, normalized_scores):
+        #         r["bm25_score"] = score 
             
-        t2 = time.time()
-        print(f"[TIMING] BM25 normalization: {(t2 - t1)*1000:.2f} ms")
+        # t2 = time.time()
+        # print(f"[TIMING] BM25 normalization: {(t2 - t1)*1000:.2f} ms")
 
-        # --------------------
-        #  3. HYBRID MERGE (FAISS + BM25)
-        # --------------------
+        # # --------------------
+        # #  3. HYBRID MERGE (FAISS + BM25)
+        # # --------------------
 
-        all_candidates = {}
+        # all_candidates = {}
 
-        #1. FAISS results 
-        for r in faiss_results:
-            all_candidates[r["text"]] ={
-                "text": r["text"],
-                "chunk_id": r["chunk_id"],
-                "source": r["source"],
-                "faiss_score": r["faiss_score"],
-                "bm25_score": 0.0
-            }
-        # 2. BM25 results
-        for r in bm25_results:
-            if r["text"] in all_candidates:
-                all_candidates[r["text"]]["bm25_score"]=r["bm25_score"]
+        # #1. FAISS results 
+        # for r in faiss_results:
+        #     cid = r["chunk_id"]
+        #     all_candidates[cid] ={
+        #         "text": r["text"],
+        #         "chunk_id": cid,
+        #         "source": r["source"],
+        #         "faiss_score": r["faiss_score"],
+        #         "bm25_score": 0.0
+        #     }
+        # # 2. BM25 results
+        # for r in bm25_results:
+        #     cid = r["chunk_id"]
+        #     if r["text"] in all_candidates:
+        #         all_candidates[cid]["bm25_score"]=r["bm25_score"]
 
-            else:
-                all_candidates[r["text"]] = {
-                    "text": r["text"],
-                    "chunk_id": r["chunk_id"],
-                    "source": r["source"],
-                    "faiss_score": 0.0,
-                    "bm25_score": r["bm25_score"]
-                }
+        #     else:
+        #         all_candidates[cid] = {
+        #             "text": r["text"],
+        #             "chunk_id": cid,
+        #             "source": r["source"],
+        #             "faiss_score": 0.0,
+        #             "bm25_score": r["bm25_score"]
+        #         }
        
 
-        # 4. FINAL CANDIDATES
-        candidates = list(all_candidates.values())   
+        # # 4. FINAL CANDIDATES
+        # candidates = list(all_candidates.values())   
 
-        # 3. HYBRID SCORE
-        for c in all_candidates.values():
-            c["hybrid_score"] = (
-                0.6 * c["faiss_score"] +
-                0.4 * c["bm25_score"]
-            )
-        # sort by hybrid score BEFORE reranker
+        # # 3. HYBRID SCORE
+        # for c in all_candidates.values():
+        #     c["hybrid_score"] = (
+        #         0.6 * c["faiss_score"] +
+        #         0.4 * c["bm25_score"]
+        #     )
+        # # sort by hybrid score BEFORE reranker
+        # candidates = sorted(
+        #     candidates,
+        #     key=lambda x: x["hybrid_score"],
+        #     reverse=True
+        # )
+        # t3 = time.time()
+        # print(f"[TIMING] Merge + hybrid scoring: {(t3 - t2)*1000:.2f} ms")
+
+        # --------------------
+        # RRF FUSION
+        # --------------------
+
+        candidates =self.rrf_fusion(
+            faiss_results,
+            bm25_results
+        )
         candidates = sorted(
             candidates,
-            key=lambda x: x["hybrid_score"],
+            key=lambda x: x["rrf_score"],
             reverse=True
         )
-        t3 = time.time()
-        print(f"[TIMING] Merge + hybrid scoring: {(t3 - t2)*1000:.2f} ms")
-        
-      
+                
         docs = [
             {
             "id": i,
