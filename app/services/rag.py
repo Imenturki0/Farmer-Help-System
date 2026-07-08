@@ -1,12 +1,13 @@
-from sentence_transformers import SentenceTransformer,CrossEncoder
-import faiss
+from sentence_transformers import SentenceTransformer
 import numpy as np
 import json
 import os
+
 from app.services.bm25_retriever import BM25Retriever
 from flashrank import Ranker,RerankRequest
 from concurrent.futures import ThreadPoolExecutor
 import time
+from app.services.vector_db import QdrantVectorDB
 
 class FAISSRAG:
 
@@ -18,7 +19,8 @@ class FAISSRAG:
 
         self.docs = []
         self.metadata = []
-        self.index = None
+        # self.index = None
+        self.vector_db = QdrantVectorDB()
 
         self.bm25 = BM25Retriever()
 
@@ -34,37 +36,67 @@ class FAISSRAG:
        
         # print(f"Loaded {len(self.docs)} clean chunks")
 
-    def build_index(self, index_path="vector_db/faiss.index"):
-        self.bm25.load("data/processed/chunks.json")
-        if os.path.exists(index_path):
-            self.index = faiss.read_index(index_path)
-            print("Loaded FAISS index from disk")
+    # def build_index(self, index_path="vector_db/faiss.index"):
+    #     self.bm25.load("data/processed/chunks.json")
+    #     if os.path.exists(index_path):
+    #         # self.index = faiss.read_index(index_path)
+    #         print("Loaded FAISS index from disk")
            
             
 
-            return
+    #         return
 
-        print("Creating embeddings...")
+    #     print("Creating embeddings...")
 
-        embeddings = self.model.encode(
-            self.docs,
-            normalize_embeddings=True,
-            show_progress_bar=True
-        )
+    #     embeddings = self.model.encode(
+    #         self.docs,
+    #         normalize_embeddings=True,
+    #         show_progress_bar=True
+    #     )
 
-        embeddings = np.array(embeddings).astype("float32")
+    #     embeddings = np.array(embeddings).astype("float32")
 
-        dim = embeddings.shape[1]
-        self.index = faiss.IndexFlatIP(dim)
-        self.index.add(embeddings)
+    #     dim = embeddings.shape[1]
+    #     # self.index = faiss.IndexFlatIP(dim)
+    #     self.index.add(embeddings)
 
-        os.makedirs("vector_db", exist_ok=True)
-        faiss.write_index(self.index, index_path)
+    #     os.makedirs("vector_db", exist_ok=True)
+    #     # faiss.write_index(self.index, index_path)
 
        
 
-        print("Built and saved FAISS index")
+    #     print("Built and saved FAISS index")
 
+    def build_index(self):
+        self.bm25.load(
+        "data/processed/chunks.json"
+    )
+        if self.vector_db.collection_exists():
+            print("Qdrant collection already exists.")
+            return 
+
+
+        embeddings = self.model.encode(
+        self.docs,
+        normalize_embeddings=True
+    )
+
+        embeddings = np.array(
+        embeddings
+    ).astype("float32")
+        
+        self.vector_db.create_collection(
+        embeddings.shape[1]
+    )
+
+
+        self.vector_db.add_documents(
+        embeddings,
+        self.metadata
+    )
+
+
+        print("Qdrant index ready")
    
     def normalize(self,scores):
         mn = min(scores)
@@ -78,18 +110,18 @@ class FAISSRAG:
             for x in scores
         ]
     
-    def rrf_fusion(self,faiss_results,bm25_results,k=60):
+    def rrf_fusion(self,vector_results,bm25_results,k=60):
         fused ={}
 
         #FAISS ranking
-        for rank, r in enumerate(faiss_results):
+        for rank, r in enumerate(vector_results):
             cid =r["chunk_id"]
 
             fused[cid]={
                 "text": r["text"],
                 "chunk_id": cid,
                 "source": r["source"],
-                "faiss_score": r["faiss_score"],
+                "vector_score": r["vector_score"],
                 "bm25_score": 0.0,
                 "rrf_score": 1 / (k + rank + 1)
             }
@@ -112,7 +144,7 @@ class FAISSRAG:
                     "text": r["text"],
                     "chunk_id": cid,
                     "source": r["source"],
-                    "faiss_score": 0.0,
+                    "vector_score": 0.0,
                     "bm25_score": r["bm25_score"],
                     "rrf_score": 1 / (k + rank + 1)
                 }
@@ -121,112 +153,37 @@ class FAISSRAG:
         return list(fused.values())
 
     
-    def _faiss_search(self,query,k):
-        q_vec =self.model.encode([query],normalize_embeddings=True)
-        q_vec= np.array(q_vec).astype("float32")
-
-        scores, indices = self.index.search(q_vec,k)
-
-        results=[]
-
-        for idx, score in zip(indices[0], scores[0]):
-            if idx== -1:
-                continue
-            results.append({
-                "text": self.docs[idx],
-                "chunk_id": self.metadata[idx]["chunk_id"],
-                "source": self.metadata[idx]["source"],
-                "faiss_score": float(score)
-            })
-        return results    
     
+    def _vector_search(self,query, k):
 
+        q_vec = self.model.encode(
+            [query],
+            normalize_embeddings=True
+        )[0]
+
+
+        return self.vector_db.search(q_vec,k )
+    
     def search(self, query, k=20, final_k=3):
         t0 = time.time()
         
         with ThreadPoolExecutor() as executor:
 
-            faiss_future= executor.submit(self._faiss_search ,query, k)
+            vector_future= executor.submit(self._vector_search ,query, k)
             bm25_future = executor.submit(self.bm25.search,query ,k)
 
-            faiss_results = faiss_future.result()
+            vector_results = vector_future.result()
             bm25_results = bm25_future.result()
         t1 = time.time()
-        print(f"[TIMING] Retrieval (FAISS+BM25): {(t1 - t0)*1000:.2f} ms")
+        print(f"[TIMING] Retrieval (Qdrant+BM25): {(t1 - t0)*1000:.2f} ms")
       
-        # # --------------------
-        # # NORMALIZE BM25
-        # # --------------------
-
-        # if bm25_results:
-        #     bm_scores=[
-        #         r["bm25_score"]
-        #         for r in bm25_results
-        #     ]
-        #     normalized_scores = self.normalize(bm_scores)
-
-        #     for r, score in zip(bm25_results, normalized_scores):
-        #         r["bm25_score"] = score 
-            
-        # t2 = time.time()
-        # print(f"[TIMING] BM25 normalization: {(t2 - t1)*1000:.2f} ms")
-
-        # # --------------------
-        # #  3. HYBRID MERGE (FAISS + BM25)
-        # # --------------------
-
-        # all_candidates = {}
-
-        # #1. FAISS results 
-        # for r in faiss_results:
-        #     cid = r["chunk_id"]
-        #     all_candidates[cid] ={
-        #         "text": r["text"],
-        #         "chunk_id": cid,
-        #         "source": r["source"],
-        #         "faiss_score": r["faiss_score"],
-        #         "bm25_score": 0.0
-        #     }
-        # # 2. BM25 results
-        # for r in bm25_results:
-        #     cid = r["chunk_id"]
-        #     if r["text"] in all_candidates:
-        #         all_candidates[cid]["bm25_score"]=r["bm25_score"]
-
-        #     else:
-        #         all_candidates[cid] = {
-        #             "text": r["text"],
-        #             "chunk_id": cid,
-        #             "source": r["source"],
-        #             "faiss_score": 0.0,
-        #             "bm25_score": r["bm25_score"]
-        #         }
-       
-
-        # # 4. FINAL CANDIDATES
-        # candidates = list(all_candidates.values())   
-
-        # # 3. HYBRID SCORE
-        # for c in all_candidates.values():
-        #     c["hybrid_score"] = (
-        #         0.6 * c["faiss_score"] +
-        #         0.4 * c["bm25_score"]
-        #     )
-        # # sort by hybrid score BEFORE reranker
-        # candidates = sorted(
-        #     candidates,
-        #     key=lambda x: x["hybrid_score"],
-        #     reverse=True
-        # )
-        # t3 = time.time()
-        # print(f"[TIMING] Merge + hybrid scoring: {(t3 - t2)*1000:.2f} ms")
-
+        
         # --------------------
         # RRF FUSION
         # --------------------
 
         candidates =self.rrf_fusion(
-            faiss_results,
+            vector_results,
             bm25_results
         )
         candidates = sorted(
@@ -241,7 +198,7 @@ class FAISSRAG:
             "text": c["text"],
             "chunk_id": c["chunk_id"],
             "source": c["source"],
-            "faiss_score": c["faiss_score"],
+            "vector_score": c["vector_score"],
             "bm25_score": c["bm25_score"]
             }
             for i, c in enumerate(candidates)
@@ -266,7 +223,7 @@ class FAISSRAG:
                 "text": original["text"],
                 "chunk_id": original["chunk_id"],
                 "source": original["source"],
-                "faiss_score": float(original["faiss_score"]),
+                "vector_score": float(original["vector_score"]),
                 "bm25_score": float(original["bm25_score"]),
                 "rerank_score": float(r["score"])
             })
