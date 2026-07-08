@@ -1,7 +1,7 @@
 from sentence_transformers import SentenceTransformer
 import numpy as np
 import json
-import os
+
 
 from app.services.bm25_retriever import BM25Retriever
 from flashrank import Ranker,RerankRequest

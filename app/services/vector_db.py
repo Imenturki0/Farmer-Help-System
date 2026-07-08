@@ -2,7 +2,11 @@ from qdrant_client import QdrantClient
 from qdrant_client.models import (
     VectorParams,
     Distance,
-    PointStruct
+    PointStruct,
+    Filter,
+    FieldCondition,
+    MatchValue
+
 )
 import uuid
 
@@ -135,16 +139,14 @@ class QdrantVectorDB:
     def delete_by_source(self, source):
         self.client.delete(
         collection_name=self.collection,
-        points_selector={
-            "filter": {
-                "must": [
-                    {
-                        "key": "source",
-                        "match": {"value": source}
-                    }
-                ]
-            }
-        }
+        points_selector=Filter(
+            must=[
+                FieldCondition(
+                    key="source",
+                    match =MatchValue(value=source)
+                )
+            ]
+        )
     )
             
 

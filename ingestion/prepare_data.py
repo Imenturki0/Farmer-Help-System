@@ -395,72 +395,55 @@ def process_pdf(path):
 
 
 
-# =========================
-# RUN
-# =========================
+def main():
+    
+    pdf_folder = Path("data/raw/pdfs")
 
-pdf_folder=Path(
-    "data/raw/pdfs"
-)
+    output=[]
+    gid=0
 
-output=[]
+    for pdf in pdf_folder.glob("*.pdf"):
 
-gid=0
+        print("Processing:", pdf.name)
+
+        chunks = process_pdf(pdf)
+
+        for i,c in enumerate(chunks):
+
+            output.append(
+                {
+                    "chunk_id": gid,
+                    "local_id": i,
+                    "text": c["text"],
+                    "pages": c["pages"],
+                    "source": pdf.name
+                }
+            )
+
+            gid += 1
 
 
-for pdf in pdf_folder.glob("*.pdf"):
-
-    print(
-        "Processing:",
-        pdf.name
+    Path("data/processed").mkdir(
+        exist_ok=True
     )
 
 
-    chunks=process_pdf(pdf)
+    with open(
+        "data/processed/chunks.json",
+        "w",
+        encoding="utf-8"
+    ) as f:
 
-
-    for i,c in enumerate(chunks):
-
-        output.append(
-            {
-            "chunk_id":gid,
-            "local_id":i,
-            "text":c["text"],
-            "pages":c["pages"],
-            "source":pdf.name,
-            "type":"farming_knowledge",
-            "clean":True
-            }
+        json.dump(
+            output,
+            f,
+            indent=2,
+            ensure_ascii=False
         )
 
-        gid+=1
+
+    print("Saved chunks:", len(output))
 
 
-
-Path(
-    "data/processed"
-).mkdir(
-    parents=True,
-    exist_ok=True
-)
-
-
-
-with open(
-    "data/processed/chunks.json",
-    "w",
-    encoding="utf-8"
-) as f:
-
-    json.dump(
-        output,
-        f,
-        indent=2,
-        ensure_ascii=False
-    )
-
-
-print(
-    "Saved chunks:",
-    len(output)
-)
+if __name__ == "__main__":
+    main()
