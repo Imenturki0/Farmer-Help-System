@@ -8,3 +8,15 @@ TOP_K = int(os.getenv("TOP_K", "20"))
 TOP_P = float(os.getenv("TOP_P", "0.9"))
 
 KEEP_ALIVE = os.getenv("KEEP_ALIVE", "5m")
+
+QDRANT_HOST = os.getenv(
+    "QDRANT_HOST",
+    "localhost"
+)
+
+QDRANT_PORT = int(
+    os.getenv(
+        "QDRANT_PORT",
+        "6333"
+    )
+)

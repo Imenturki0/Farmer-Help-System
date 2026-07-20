@@ -46,15 +46,43 @@ def startup():
 @app.post("/ask")
 def ask_farm(question: Question):
     try:
-        answer = handle_question(question)
+        
+
+        answer = handle_question(
+            question,
+            question.session_id
+        )
         return PlainTextResponse(
             content=answer
         )
 
     except Exception as e:
+        logger.exception(e)
         logger.error(f"Error: {e}")
         return {"error": "Internal server error"}
     
 @app.post("/ask-stream")
 def ask_stream_route(question: Question):
-   return  handle_question_steam(question)
+   return  handle_question_steam(question,question.session_id)
+# in general
+# FastAPI
+#    |
+#    v
+# Orchestrator
+#    |
+#    +---- Router
+#    |
+#    +---- Weather Service
+#    |
+#    +---- RAG Service
+#    |
+#    +---- LLM
+#    |
+#    +---- Memory
+# for main 
+# Application starts
+#     |
+#     Load embeddings once
+#     |
+#     Serve requests
+

@@ -1,6 +1,39 @@
+
+
+#API
 fastapi
-uvicorn
-sentence-transformers
-faiss-cpu
-numpy
+uvicorn[standard]
+
+# LLM / HTTP
 requests
+
+# Embeddings
+sentence-transformers
+
+# Vector Database
+qdrant-client
+
+# Retrieval
+rank-bm25
+flashrank
+
+# Document Processing
+pymupdf
+
+# Data processing
+numpy
+pandas
+
+# Evaluation
+rouge-score
+tqdm
+
+# File monitoring
+watchdog
+
+# Environment
+python-dotenv
+
+# Testing (optional but recommended)
+pytest
+httpx

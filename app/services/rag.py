@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor
 import time
 from app.services.vector_db import QdrantVectorDB
 
-class FAISSRAG:
+class RAGPipeline:
 
     def __init__(self, model_name="BAAI/bge-base-en-v1.5"):
         self.model = SentenceTransformer(model_name)
@@ -36,36 +36,7 @@ class FAISSRAG:
        
         # print(f"Loaded {len(self.docs)} clean chunks")
 
-    # def build_index(self, index_path="vector_db/faiss.index"):
-    #     self.bm25.load("data/processed/chunks.json")
-    #     if os.path.exists(index_path):
-    #         # self.index = faiss.read_index(index_path)
-    #         print("Loaded FAISS index from disk")
-           
-            
-
-    #         return
-
-    #     print("Creating embeddings...")
-
-    #     embeddings = self.model.encode(
-    #         self.docs,
-    #         normalize_embeddings=True,
-    #         show_progress_bar=True
-    #     )
-
-    #     embeddings = np.array(embeddings).astype("float32")
-
-    #     dim = embeddings.shape[1]
-    #     # self.index = faiss.IndexFlatIP(dim)
-    #     self.index.add(embeddings)
-
-    #     os.makedirs("vector_db", exist_ok=True)
-    #     # faiss.write_index(self.index, index_path)
-
-       
-
-    #     print("Built and saved FAISS index")
+  
 
     def build_index(self):
         self.bm25.load(
@@ -244,4 +215,25 @@ class FAISSRAG:
 
         return top, best_score
     
-rag = FAISSRAG()
+rag = RAGPipeline()
+
+# Documents
+#     |
+#     v
+# Embedding model (BGE)
+#     |
+#     +----------------+
+#     |                |
+# Dense Retrieval   BM25 Retrieval
+# (Qdrant)          (keyword)
+#     |                |
+#     +-------RRF------+
+#             |
+#             v
+#        FlashRank reranking
+#             |
+#             v
+#        Context selection
+#             |
+#             v
+#             LLM

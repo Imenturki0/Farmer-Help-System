@@ -4,6 +4,7 @@ from app.services.llm import generate_answer,generate_stream
 import json
 from fastapi.responses import StreamingResponse
 from app.core.router import llm_route
+from app.core.memory import memory
 # -------------------------
 # FORMAT CONTEXT
 # -------------------------
@@ -19,14 +20,24 @@ def log_debug(data):
     with open("debug_logs.jsonl", "a") as f:
         f.write(json.dumps(data) + "\n")
 
+def finish(session_id, user_text, answer):
+    memory.add(session_id, "User", user_text)
+    memory.add(session_id, "Assistant", answer)
+    return answer
 # -------------------------
 # MAIN PIPELINE
 # -------------------------
-def handle_question(question):
+def handle_question(question,session_id):
 
 
     text = question.text
 
+    history = memory.get(session_id)
+
+    history_text =""
+
+    for msg in history:
+        history_text += f"{msg['role']}: {msg['content']}\n"
     # -------------------------
     # 1. ROUTING
     # -------------------------
@@ -56,13 +67,17 @@ def handle_question(question):
     # 2. CHAT
     # -------------------------
     if route == "chat":
-        return generate_answer(f"""
+        answer= generate_answer(f"""
             You are a friendly farming assistant.
+            
+            Conversation History:
+            {history_text}
 
             User said: {text}
 
             Respond naturally and briefly.
             """)
+        return finish(session_id, text, answer)
      # -------------------------
     # 3. WEATHER
     # -------------------------
@@ -78,11 +93,16 @@ def handle_question(question):
         except Exception as e:
             print("Weather error:", e)
 
-        return generate_answer(f"""
+        answer= generate_answer(f"""
                 You are a farming assistant.
+                
+                Conversation History:
+                {history_text}
+
                 Explain this weather for farming:
                 {weather}
                 """)
+        return finish(session_id, text, answer)
     # -------------------------
     # 4. RAG
     # -------------------------
@@ -111,8 +131,12 @@ Keep the response short and natural.
     prompt = f"""
     You are a friendly farming assistant.
 
+    Conversation History:
+    {history_text}
+
     RULES:
     - Only answer farming-related questions
+    - Use the previous conversation when the user refers to something like "it", "that", "this", or "yes".
     - Do not hallucinate
     - Use context if available
 
@@ -129,10 +153,24 @@ Keep the response short and natural.
         "retrieved": [r["chunk_id"] for r in rag_results[:5]]
     })
 
-    return generate_answer(prompt)
+    answer = generate_answer(prompt)
+
+    return finish(session_id, text, answer)
    
   
+def stream_with_memory(prompt , session_id ,user_text):
 
+    full_answer =""
+
+    for token in generate_stream(prompt):
+
+        full_answer += token
+
+        yield token 
+    
+    memory.add(session_id, "User", user_text)
+    memory.add(session_id, "Assistant", full_answer)
+    
    
 
 def ask_stream(question):
@@ -159,9 +197,16 @@ Context:
     )
 
 
-def handle_question_steam(question):
+def handle_question_steam(question,session_id):
 
     text =question.text
+
+    history = memory.get(session_id)
+
+    history_text = ""
+
+    for msg in history:
+        history_text += f"{msg['role']}: {msg['content']}\n"
 
     route ,confidence= llm_route(text)
 
@@ -176,11 +221,20 @@ def handle_question_steam(question):
         prompt =f"""
 you are friendly farming assistant.
 
+Conversation History:
+{history_text}
+
 User said:{text}
 
 respond naturally and briefly.
 """
-        return StreamingResponse(generate_stream(prompt),media_type="text/plain")
+        return StreamingResponse( 
+            stream_with_memory(
+                prompt,
+                session_id,
+                text
+        ),
+            media_type="text/plain")
     
     if route=="weather":
         weather_data=get_weather(question.lat,question.lon)
@@ -193,12 +247,26 @@ respond naturally and briefly.
 
         prompt = f"""
         You are a farming assistant.
+
+        Conversation History:
+        {history_text}
+
         Explain this weather for farming:
 
         {weather}
+
+
+        Current User Question:
+        {text}
         """
 
-        return StreamingResponse(generate_stream(prompt), media_type="text/plain")
+        return StreamingResponse( 
+            stream_with_memory(
+                prompt,
+                session_id,
+                text
+        ),
+            media_type="text/plain")
     
     if route == "rag":
         rag_results, best_score = rag.search(text, k=10, final_k=5)
@@ -216,10 +284,24 @@ respond naturally and briefly.
 
         Keep it short and natural.
         """
-        return StreamingResponse(generate_stream(prompt), media_type="text/plain")
+        return StreamingResponse( 
+            stream_with_memory(
+                prompt,
+                session_id,
+                text
+        ),
+            media_type="text/plain")
 
     prompt = f"""
     You are a friendly farming assistant.
+
+    Conversation History:
+    {history_text}
+
+    RULES:
+    - Only answer farming questions.
+    - Use previous conversation when appropriate.
+    - Do not hallucinate.
 
     User Question:
     {text}
@@ -228,4 +310,51 @@ respond naturally and briefly.
     {context if context else "No relevant farming context found."}
     """
 
-    return StreamingResponse(generate_stream(prompt), media_type="text/plain")
+    return StreamingResponse( 
+            stream_with_memory(
+                prompt,
+                session_id,
+                text
+        ),
+            media_type="text/plain")
+
+
+# Question
+#  |
+# Router
+#  |
+# Intent decision
+#  |
+# Service execution
+#  |
+# Context building
+#  |
+# LLM generation
+#  |
+# Memory update
+
+# Problem 1: Orchestrator is becoming too large ⚠️
+
+# Currently:
+
+# handle_question()
+
+# does:
+
+# routing
+# weather
+# RAG
+# prompt building
+# memory
+# logging
+# response formatting
+
+# In production I would split:
+
+# orchestrator.py
+
+# router_handler.py
+# rag_handler.py
+# weather_handler.py
+# chat_handler.py
+# memory_manager.py

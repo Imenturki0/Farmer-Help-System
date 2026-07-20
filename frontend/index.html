@@ -228,6 +228,7 @@
             <div class="mode" data-mode="pest">🐛 Pest</div>
             <div class="mode" data-mode="soil">🌱 Soil</div>
             <div class="mode" data-mode="water">💧 Water</div>
+            <button class="mode" onclick="newChat()">➕ New Chat</button>
 
         </div>
 
@@ -249,6 +250,14 @@
 
         let mode = "general";
         let userLocation = null;
+
+        let sessionId = localStorage.getItem("session_id")
+
+        if (!sessionId) {
+            sessionId = crypto.randomUUID();
+            localStorage.setItem("session_id", sessionId)
+        }
+        console.log("Session:", sessionId)
 
         /* SIDEBAR TOGGLE (clean) */
         function toggleSidebar() {
@@ -317,6 +326,7 @@
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
                         text,
+                        session_id: sessionId,
                         mode,
                         lat: userLocation?.lat,
                         lon: userLocation?.lon
@@ -326,17 +336,17 @@
                 // const data = await res.json();
                 let fullText = "";
 
-const reader = res.body.getReader();
-const decoder = new TextDecoder();
+                const reader = res.body.getReader();
+                const decoder = new TextDecoder();
 
-while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
 
-    fullText += decoder.decode(value, { stream: true });
+                    fullText += decoder.decode(value, { stream: true });
 
-    typing.innerHTML = marked.parse(fullText);
-}
+                    typing.innerHTML = marked.parse(fullText);
+                }
                 // typing.innerText = "";
                 // typeText(data.answer, typing);
 
@@ -367,6 +377,7 @@ while (true) {
                 addMessage("⚠️ Please allow location", "ai");
             }
         };
+
         function typeText(text, element, speed = 15) {
             let i = 0;
             element.innerText = "";
@@ -380,6 +391,17 @@ while (true) {
             }
 
             typing();
+        }
+
+        function newChat() {
+
+            // Create a brand new conversation
+            sessionId = crypto.randomUUID();
+
+            // Clear the chat window
+            document.getElementById("chat").innerHTML = "";
+
+            addMessage("🌱 New conversation started.", "ai");
         }
     </script>
 

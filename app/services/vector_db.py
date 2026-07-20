@@ -8,6 +8,7 @@ from qdrant_client.models import (
     MatchValue
 
 )
+from app.core.config import QDRANT_HOST,QDRANT_PORT
 import uuid
 
 
@@ -19,8 +20,8 @@ class QdrantVectorDB:
     ):
 
         self.client = QdrantClient(
-            host="localhost",
-            port=6333
+            host=QDRANT_HOST,
+            port=QDRANT_PORT
         )
 
         self.collection = collection
@@ -103,7 +104,7 @@ class QdrantVectorDB:
                 "text": r.payload["text"],
                 "chunk_id": r.payload["chunk_id"],
                 "source": r.payload["source"],
-                "faiss_score": float(r.score)
+                "vector_score": float(r.score)
             }
             for r in results
         ]
