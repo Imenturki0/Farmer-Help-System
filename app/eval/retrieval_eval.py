@@ -6,7 +6,7 @@ import numpy as np
 from tqdm import tqdm
 
 from app.services.rag import rag
-from flashrank import RerankRequest
+# from flashrank import RerankRequest
 
 # =====================================================
 # CONFIG
@@ -234,57 +234,7 @@ def hybrid_search(
 
     return fused[:k]
 
-def reranker_search(question, k=20):
-    # Get candidates from hybrid retrieval
-    vector_results = rag._vector_search(question, k)
-    bm25_results = rag.bm25.search(question, k)
 
-    candidates = rag.rrf_fusion(vector_results, bm25_results)
-    candidates = sorted(
-        candidates,
-        key=lambda x: x["rrf_score"],
-        reverse=True
-    )
-
-    docs = [
-        {
-            "id": i,
-            "text": c["text"],
-            "chunk_id": c["chunk_id"],
-            "source": c["source"],
-            "vector_score": c["vector_score"],
-            "bm25_score": c["bm25_score"]
-        }
-        for i, c in enumerate(candidates)
-    ]
-
-    request = RerankRequest(
-        query=question,
-        passages=docs
-    )
-
-    results = rag.reranker.rerank(request)
-
-    reranked = []
-
-    for r in results:
-        original = candidates[r["id"]]
-        reranked.append({
-            "text": original["text"],
-            "chunk_id": original["chunk_id"],
-            "source": original["source"],
-            "rerank_score": r["score"],
-            "vector_score": float(original["vector_score"]),
-            "bm25_score": float(original["bm25_score"]),
-            "rerank_score": float(r["score"])
-        })
-
-    reranked.sort(
-        key=lambda x: x["rerank_score"],
-        reverse=True
-    )
-
-    return reranked[:5]
 
 def production_search(
         question
@@ -401,9 +351,6 @@ def evaluate(
             results = production_search(
                 question
             )
-        elif mode == "reranker":
-    
-            results = reranker_search(question)
 
 
         else:
@@ -733,8 +680,6 @@ if __name__ == "__main__":
         "qdrant",
 
         "hybrid",
-
-        "reranker",
 
         "production"
 

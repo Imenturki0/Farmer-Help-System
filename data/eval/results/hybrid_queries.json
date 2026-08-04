@@ -31,7 +31,7 @@
         "correct_chunks": [
             942
         ],
-        "latency_ms": 69.54336166381836
+        "latency_ms": 41.55683517456055
     },
     {
         "question": "What type of fertilizer would be suitable for growing Perpetual Spinach, considering its biennial nature and potential to bolt in certain months?",
@@ -65,7 +65,7 @@
         "correct_chunks": [
             689
         ],
-        "latency_ms": 78.24182510375977
+        "latency_ms": 33.39838981628418
     },
     {
         "question": "What type of fertilizer would you recommend for a farmer who wants to improve soil temperature and reduce the risk of forking in their sugar beet crop?",
@@ -100,7 +100,7 @@
             362,
             53
         ],
-        "latency_ms": 72.85928726196289
+        "latency_ms": 55.88173866271973
     },
     {
         "question": "What type of fertilizer should a farmer apply to their winter wheat crop if their soil test results show magnesium deficiency?",
@@ -135,7 +135,7 @@
             785,
             798
         ],
-        "latency_ms": 49.84092712402344
+        "latency_ms": 47.11270332336426
     },
     {
         "question": "What fertilizer application strategy would you recommend for a farmer who wants to minimize the impact of wireworms on their arable crops while also maintaining soil organic matter levels?",
@@ -169,7 +169,7 @@
         "correct_chunks": [
             238
         ],
-        "latency_ms": 66.80035591125488
+        "latency_ms": 51.04231834411621
     },
     {
         "question": "What type of fertilizer should be used widely in agriculture, considering its cost, fertility, and ability to supply trace elements?",
@@ -203,7 +203,7 @@
         "correct_chunks": [
             21
         ],
-        "latency_ms": 57.550668716430664
+        "latency_ms": 43.92218589782715
     },
     {
         "question": "What type of fertilizer should I use for my beetroot crop, considering its almost hardy nature and the need for good seed-soil contact?",
@@ -238,7 +238,7 @@
             1003,
             374
         ],
-        "latency_ms": 99.60365295410156
+        "latency_ms": 48.92683029174805
     },
     {
         "question": "What are the key elements added to the soil by fertilizer made from kitchen waste, and how do these elements affect plant growth?",
@@ -272,7 +272,7 @@
         "correct_chunks": [
             1176
         ],
-        "latency_ms": 76.13801956176758
+        "latency_ms": 41.17131233215332
     },
     {
         "question": "What is the best time for planting sweetcorn in terms of fertilizer application and yield, considering the pros and cons of bulk storage?",
@@ -308,7 +308,7 @@
             854,
             879
         ],
-        "latency_ms": 55.56321144104004
+        "latency_ms": 48.39587211608887
     },
     {
         "question": "What type of fertilizer would you recommend using for iceberg lettuce, considering the pros and cons of organic and chemical options?",
@@ -343,7 +343,7 @@
             1120,
             599
         ],
-        "latency_ms": 65.12093544006348
+        "latency_ms": 28.081893920898438
     },
     {
         "question": "What type of fertilizer should a farmer use if they want to reduce their dependence on chemical fertilizers and increase the fertility of their land?",
@@ -377,7 +377,7 @@
         "correct_chunks": [
             1186
         ],
-        "latency_ms": 79.83946800231934
+        "latency_ms": 49.61585998535156
     },
     {
         "question": "What is the effect of using fertilizers on the soil's Specific Conductivity (SC) reading, and how does this impact potato growth?",
@@ -411,7 +411,7 @@
         "correct_chunks": [
             102
         ],
-        "latency_ms": 82.35979080200195
+        "latency_ms": 48.616647720336914
     },
     {
         "question": "What type of fertilizer should I use on my wheat crop, considering the soil conditions and climate?",
@@ -445,7 +445,7 @@
         "correct_chunks": [
             1000
         ],
-        "latency_ms": 69.83423233032227
+        "latency_ms": 38.789987564086914
     },
     {
         "question": "What type of fertilizer can be produced using kitchen waste, considering the limitations of technology and time constraints?",
@@ -479,7 +479,7 @@
         "correct_chunks": [
             1178
         ],
-        "latency_ms": 67.69967079162598
+        "latency_ms": 54.11982536315918
     },
     {
         "question": "What type of fertilizer can be produced using kitchen waste, and how does it benefit soil structure?",
@@ -511,7 +511,7 @@
             1177
         ],
         "correct_chunks": [],
-        "latency_ms": 66.49374961853027
+        "latency_ms": 40.154218673706055
     },
     {
         "question": "What type of fertilizer should I use on my sweet corn crop, considering its location and potential bacterial disease issues?",
@@ -545,7 +545,7 @@
         "correct_chunks": [
             706
         ],
-        "latency_ms": 72.00169563293457
+        "latency_ms": 51.722049713134766
     },
     {
         "question": "What factors should I consider when applying fertilizer to my vegetable crop under glass or plastic, and how can I prevent an excessive buildup of nutrients in the soil?",
@@ -579,7 +579,7 @@
         "correct_chunks": [
             105
         ],
-        "latency_ms": 65.96255302429199
+        "latency_ms": 48.149824142456055
     },
     {
         "question": "What type of fertilizer should I use based on my soil test results, considering the pH level and phosphorus (P) and potash (K) levels?",
@@ -613,7 +613,7 @@
         "correct_chunks": [
             88
         ],
-        "latency_ms": 72.22342491149902
+        "latency_ms": 50.580739974975586
     },
     {
         "question": "What are some key factors to consider when deciding whether to use fertilizer made from kitchen waste in my French bean crop?",
@@ -647,7 +647,7 @@
         "correct_chunks": [
             1184
         ],
-        "latency_ms": 92.06604957580566
+        "latency_ms": 34.07692909240723
     },
     {
         "question": "What type of fertilizer should I use on my peas, considering the support structure and potential disease risks?",
@@ -681,7 +681,7 @@
         "correct_chunks": [
             647
         ],
-        "latency_ms": 58.8831901550293
+        "latency_ms": 53.99465560913086
     },
     {
         "question": "What are some key factors to consider when setting up a compost bin for optimal heat retention and rapid decomposition?",
@@ -716,7 +716,7 @@
             145,
             149
         ],
-        "latency_ms": 73.78745079040527
+        "latency_ms": 38.61808776855469
     },
     {
         "question": "What are some effective methods for controlling cutworms and leatherjackets on brassica crops, considering their life cycles and habits?",
@@ -752,7 +752,7 @@
             221,
             207
         ],
-        "latency_ms": 65.1400089263916
+        "latency_ms": 40.47393798828125
     },
     {
         "question": "What can I do to manage the celery fly pest on my parsnip crop, considering the life cycle of the larvae and the potential for damage in back gardens and allotments?",
@@ -786,7 +786,7 @@
         "correct_chunks": [
             220
         ],
-        "latency_ms": 73.7459659576416
+        "latency_ms": 48.789024353027344
     },
     {
         "question": "What are some common pests that can affect legume crops, such as peas and beans, and how do they typically damage the plants?",
@@ -820,7 +820,7 @@
         "correct_chunks": [
             226
         ],
-        "latency_ms": 62.303781509399414
+        "latency_ms": 34.35540199279785
     },
     {
         "question": "What is the most effective way to control aphid infestation on a farm, considering the life cycle of aphids and the potential for rapid population growth?",
@@ -854,7 +854,7 @@
         "correct_chunks": [
             197
         ],
-        "latency_ms": 81.49981498718262
+        "latency_ms": 50.760507583618164
     },
     {
         "question": "What is the best approach to control caterpillars that attack brassicas, considering the possibility of butterflies and moths laying eggs on the foliage?",
@@ -888,7 +888,7 @@
         "correct_chunks": [
             215
         ],
-        "latency_ms": 66.3909912109375
+        "latency_ms": 48.207998275756836
     },
     {
         "question": "What is the most effective way to minimize the risk of carrot fly damage considering the information about the pest's life cycle and the potential for carry-over from previous crops?",
@@ -923,7 +923,7 @@
             211,
             302
         ],
-        "latency_ms": 78.18102836608887
+        "latency_ms": 39.41035270690918
     },
     {
         "question": "What is the most effective method for controlling slugs on a small plot area?",
@@ -958,7 +958,7 @@
             229,
             230
         ],
-        "latency_ms": 56.01048469543457
+        "latency_ms": 50.22406578063965
     },
     {
         "question": "What is a good strategy for farmers to control aphid infestations in their wheat crops, considering the potential impact of climate change?",
@@ -992,7 +992,7 @@
         "correct_chunks": [
             1019
         ],
-        "latency_ms": 80.93881607055664
+        "latency_ms": 49.677133560180664
     },
     {
         "question": "What is the most effective way to manage pest damage to brassicas, considering both rabbits and rodents, in the early stages of crop growth?",
@@ -1027,7 +1027,7 @@
             227,
             228
         ],
-        "latency_ms": 70.17374038696289
+        "latency_ms": 38.7263298034668
     },
     {
         "question": "What is the most effective way to protect young brassica plants from pests, considering the damage caused by different generations of flies and the timing of attacks?",
@@ -1062,7 +1062,7 @@
             204,
             213
         ],
-        "latency_ms": 75.38461685180664
+        "latency_ms": 39.91389274597168
     },
     {
         "question": "What are some potential issues with aphids on sprouts, and how can I prevent or control them?",
@@ -1096,7 +1096,7 @@
         "correct_chunks": [
             520
         ],
-        "latency_ms": 55.106163024902344
+        "latency_ms": 47.881364822387695
     },
     {
         "question": "What should I consider when controlling pests in my wheat crop, given that aphids and stalk borers can attack it, and Quelea birds may consume grain during the late grain-ﬁlling period?",
@@ -1131,7 +1131,7 @@
             200,
             1018
         ],
-        "latency_ms": 66.192626953125
+        "latency_ms": 32.90271759033203
     },
     {
         "question": "What are some common factors that contribute to the spread of disease in celery and leeks, and how do these factors affect the development of symptoms?",
@@ -1166,7 +1166,7 @@
             320,
             268
         ],
-        "latency_ms": 66.89810752868652
+        "latency_ms": 60.87541580200195
     },
     {
         "question": "What factors contribute to the prevalence of White Blister disease on brassicas, considering its ability to persist in soil and lack of chemical controls?",
@@ -1200,7 +1200,7 @@
         "correct_chunks": [
             309
         ],
-        "latency_ms": 76.74598693847656
+        "latency_ms": 39.7341251373291
     },
     {
         "question": "What factors contribute to the development of club root disease in brassicas, and how can farmers prevent or control it?",
@@ -1234,7 +1234,7 @@
         "correct_chunks": [
             291
         ],
-        "latency_ms": 57.713985443115234
+        "latency_ms": 47.747135162353516
     },
     {
         "question": "What are some key times in a wheat crop's life cycle when I should prioritize irrigation, considering my limited water supply and the type of soil I have?",
@@ -1269,7 +1269,7 @@
             1011,
             407
         ],
-        "latency_ms": 82.09443092346191
+        "latency_ms": 58.12883377075195
     },
     {
         "question": "What is the ideal time to harvest rhubarb, considering both its natural growth cycle and the need to allow for regrowth?",
@@ -1303,7 +1303,7 @@
         "correct_chunks": [
             677
         ],
-        "latency_ms": 69.87524032592773
+        "latency_ms": 34.26098823547363
     },
     {
         "question": "What are some factors to consider when harvesting pumpkins and squashes, and how do they compare to sweetcorn harvesting?",
@@ -1338,7 +1338,7 @@
             668,
             711
         ],
-        "latency_ms": 66.95413589477539
+        "latency_ms": 40.89760780334473
     },
     {
         "question": "What is the recommended plant spacing for sprouts to achieve a balance between stem length, sprout size, maturity, and uniformity, considering the characteristics affected by population density?",
@@ -1372,7 +1372,7 @@
         "correct_chunks": [
             517
         ],
-        "latency_ms": 85.16049385070801
+        "latency_ms": 51.72538757324219
     },
     {
         "question": "What is the best time to sow Swiss chard in Zimbabwe, considering the agro-ecological environment and good agronomic practices?",
@@ -1407,6 +1407,6 @@
             690,
             764
         ],
-        "latency_ms": 63.69638442993164
+        "latency_ms": 33.265113830566406
     }
 ]

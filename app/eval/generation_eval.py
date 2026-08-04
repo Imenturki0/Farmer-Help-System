@@ -17,6 +17,7 @@ DATASET_PATH = "data/eval/qa_dataset.json"
 RESULT_DIR = "data/eval/generation_results"
 
 
+
 # =====================================================
 # LOAD DATASET
 # =====================================================
@@ -34,31 +35,31 @@ def load_dataset():
 
 # =====================================================
 # RETRIEVAL
+# Hybrid Retrieval WITHOUT Reranker
 # =====================================================
 
 
-# -------------------------------
-# WITHOUT RERANKER
-# -------------------------------
-
-def retrieve_without_reranker(
+def retrieve_hybrid(
         question,
         k=10,
         final_k=5
 ):
 
+    # Dense retrieval
     vector_results = rag._vector_search(
         question,
         k
     )
 
 
+    # Keyword retrieval
     bm25_results = rag.bm25.search(
         question,
         k
     )
 
 
+    # RRF fusion
     candidates = rag.rrf_fusion(
         vector_results,
         bm25_results
@@ -67,33 +68,12 @@ def retrieve_without_reranker(
 
     candidates = sorted(
         candidates,
-        key=lambda x:x["rrf_score"],
+        key=lambda x: x["rrf_score"],
         reverse=True
     )
 
 
     return candidates[:final_k]
-
-
-
-# -------------------------------
-# WITH RERANKER
-# -------------------------------
-
-
-def retrieve_with_reranker(
-        question,
-        k=10,
-        final_k=5
-):
-
-    results, score = rag.search(
-        question,
-        k=k,
-        final_k=final_k
-    )
-
-    return results
 
 
 
@@ -126,9 +106,10 @@ def build_prompt(
 You are a farming assistant.
 
 Rules:
-- Answer only using the context.
-- Do not invent information.
-- If context is insufficient say you don't know.
+- Answer only using the provided context.
+- Do not hallucinate.
+- If the context does not contain the answer, say you don't know.
+
 
 Question:
 
@@ -139,6 +120,7 @@ Context:
 
 {context}
 
+
 Answer:
 
 """
@@ -146,7 +128,8 @@ Answer:
 
 
 # =====================================================
-# SIMPLE ANSWER METRICS
+# ANSWER METRIC
+# Simple lexical similarity
 # =====================================================
 
 
@@ -183,23 +166,23 @@ def keyword_score(
 # =====================================================
 
 
-def evaluate_mode(
-        dataset,
-        mode
+def evaluate(
+        dataset
 ):
+
 
     print()
     print("="*60)
-    print("MODE:", mode)
+    print("MODE: hybrid_without_reranker")
     print("="*60)
 
 
-    results=[]
-
+    details=[]
 
     scores=[]
 
     latencies=[]
+
 
 
     for item in tqdm(dataset):
@@ -214,34 +197,24 @@ def evaluate_mode(
         start=time.time()
 
 
-        # --------------------------
+
+        # -----------------------------
         # RETRIEVAL
-        # --------------------------
+        # -----------------------------
 
-        if mode=="without_reranker":
-
-            docs = retrieve_without_reranker(
-                question
-            )
-
-
-        elif mode=="with_reranker":
-
-            docs = retrieve_with_reranker(
-                question
-            )
-
-
-        else:
-
-            raise ValueError(mode)
-
+        docs = retrieve_hybrid(
+            question
+        )
 
 
         context = build_context(
             docs
         )
 
+
+        # -----------------------------
+        # GENERATION
+        # -----------------------------
 
         prompt = build_prompt(
             question,
@@ -259,66 +232,83 @@ def evaluate_mode(
         )*1000
 
 
+
+        # -----------------------------
+        # SCORE
+        # -----------------------------
+
         score = keyword_score(
             answer,
             ground_truth
         )
 
 
-        scores.append(
-            score
-        )
+        scores.append(score)
+
+        latencies.append(latency)
 
 
-        latencies.append(
-            latency
-        )
 
+        details.append({
 
-        results.append({
+            "question": question,
 
-            "question":question,
+            "ground_truth": ground_truth,
 
-            "ground_truth":ground_truth,
+            "answer": answer,
 
-            "answer":answer,
-            
-            "context": context,   
+            "context": context,
+
 
             "retrieved_chunks":[
+
                 r["chunk_id"]
+
                 for r in docs
+
             ],
 
-            "score":score,
 
-            "latency_ms":latency
+            "score": score,
+
+
+            "latency_ms": latency
 
         })
 
 
+
     summary={
 
+
         "answer_score":
-            float(np.mean(scores)),
+
+            float(
+                np.mean(scores)
+            ),
+
+
 
         "average_latency_ms":
-            float(np.mean(latencies))
+
+            float(
+                np.mean(latencies)
+            )
 
     }
 
 
-    return summary, results
+
+    return summary, details
 
 
 
 # =====================================================
-# SAVE
+# SAVE RESULTS
 # =====================================================
 
 
 def save_results(
-        mode,
         summary,
         details
 ):
@@ -330,10 +320,11 @@ def save_results(
 
 
     with open(
-        f"{RESULT_DIR}/{mode}_summary.json",
+        f"{RESULT_DIR}/hybrid_summary.json",
         "w",
         encoding="utf-8"
     ) as f:
+
 
         json.dump(
             summary,
@@ -342,54 +333,19 @@ def save_results(
         )
 
 
+
     with open(
-        f"{RESULT_DIR}/{mode}_details.json",
+        f"{RESULT_DIR}/hybrid_details.json",
         "w",
         encoding="utf-8"
     ) as f:
+
 
         json.dump(
             details,
             f,
             indent=4,
             ensure_ascii=False
-        )
-
-
-
-# =====================================================
-# COMPARE
-# =====================================================
-
-
-def compare(all_results):
-
-    print()
-    print("="*70)
-    print("FINAL COMPARISON")
-    print("="*70)
-
-
-    print(
-        f"{'Mode':20}"
-        f"{'Answer Score':20}"
-        f"{'Latency(ms)':20}"
-    )
-
-
-    print("-"*70)
-
-
-    for mode,result in all_results.items():
-
-        print(
-
-            f"{mode:20}"
-
-            f"{result['answer_score']:<20.4f}"
-
-            f"{result['average_latency_ms']:<20.2f}"
-
         )
 
 
@@ -414,51 +370,47 @@ if __name__=="__main__":
     DOC_PATH="data/processed/chunks.json"
 
 
+
+    # Load documents
+
     rag.load_docs(
         DOC_PATH
     )
 
+
+    # Load BM25
 
     rag.bm25.load(
         DOC_PATH
     )
 
 
-    modes=[
 
-        "without_reranker",
-
-        "with_reranker"
-
-    ]
-
-
-    all_results={}
-
-
-    for mode in modes:
-
-
-        summary,details = evaluate_mode(
-            dataset,
-            mode
-        )
-
-
-        print(summary)
-
-
-        save_results(
-            mode,
-            summary,
-            details
-        )
-
-
-        all_results[mode]=summary
+    summary,details = evaluate(
+        dataset
+    )
 
 
 
-    compare(
-        all_results
+    print("\nRESULTS")
+    print("-"*40)
+
+
+    print(
+        "Answer score:",
+        summary["answer_score"]
+    )
+
+
+    print(
+        "Average latency:",
+        summary["average_latency_ms"],
+        "ms"
+    )
+
+
+
+    save_results(
+        summary,
+        details
     )

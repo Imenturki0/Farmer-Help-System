@@ -15,7 +15,7 @@ class RAGPipeline:
         self.model = SentenceTransformer(model_name)
 
           # 🔥 RERANKER ADDED
-        self.reranker = Ranker(model_name="ms-marco-MiniLM-L-12-v2")
+        # self.reranker = Ranker(model_name="BAAI/bge-reranker-base")
 
         self.docs = []
         self.metadata = []
@@ -162,58 +162,82 @@ class RAGPipeline:
             key=lambda x: x["rrf_score"],
             reverse=True
         )
-                
-        docs = [
-            {
-            "id": i,
-            "text": c["text"],
-            "chunk_id": c["chunk_id"],
-            "source": c["source"],
-            "vector_score": c["vector_score"],
-            "bm25_score": c["bm25_score"]
-            }
-            for i, c in enumerate(candidates)
-        ]
-        request = RerankRequest(
-            query=query,
-            passages=docs
-        )
+        # ====================================================
+        # OLD FLASHRANK RERANKER (REMOVED AFTER EVALUATION)
+        # ====================================================      
+        # docs = [
+        #     {
+        #     "id": i,
+        #     "text": c["text"],
+        #     "chunk_id": c["chunk_id"],
+        #     "source": c["source"],
+        #     "vector_score": c["vector_score"],
+        #     "bm25_score": c["bm25_score"]
+        #     }
+        #     for i, c in enumerate(candidates)
+        # ]
+        # request = RerankRequest(
+        #     query=query,
+        #     passages=docs
+        # )
 
-        t4 = time.time()
+        # t4 = time.time()
 
-        results = self.reranker.rerank(request)
+        # results = self.reranker.rerank(request)
 
-        t5 = time.time()
-        print(f"[TIMING] FlashRank rerank: {(t5 - t4)*1000:.2f} ms")
+        # t5 = time.time()
+        # print(f"[TIMING] FlashRank rerank: {(t5 - t4)*1000:.2f} ms")
   
-        reranked_candidates = []
-        for r in results:
-            idx = r["id"]
-            original = candidates[idx]
-            reranked_candidates.append({
-                "text": original["text"],
-                "chunk_id": original["chunk_id"],
-                "source": original["source"],
-                "vector_score": float(original["vector_score"]),
-                "bm25_score": float(original["bm25_score"]),
-                "rerank_score": float(r["score"])
-            })
-        # sort by reranker
-        reranked_candidates = sorted(
-            reranked_candidates,
-            key=lambda x: x["rerank_score"],
-            reverse=True
-        )
-        t6 = time.time()
-        print(f"[TIMING] Final formatting: {(t6 - t5)*1000:.2f} ms")
+        # reranked_candidates = []
+        # for r in results:
+        #     idx = r["id"]
+        #     original = candidates[idx]
+        #     reranked_candidates.append({
+        #         "text": original["text"],
+        #         "chunk_id": original["chunk_id"],
+        #         "source": original["source"],
+        #         "vector_score": float(original["vector_score"]),
+        #         "bm25_score": float(original["bm25_score"]),
+        #         "rerank_score": float(r["score"])
+        #     })
+        # # sort by reranker
+        # reranked_candidates = sorted(
+        #     reranked_candidates,
+        #     key=lambda x: x["rerank_score"],
+        #     reverse=True
+        # )
 
-        print(f"[TOTAL TIME]: {(t6 - t0)*1000:.2f} ms")
-        
-        top = reranked_candidates[:final_k]
+        # top = reranked_candidates[:final_k]
 
-        best_score = top[0]["rerank_score"] if top else -999
+        # best_score = top[0]["rerank_score"] if top else -999
 
-        return top, best_score
+        # return top, best_score
+
+        # ====================================================
+        # CURRENT PRODUCTION PIPELINE (WITHOUT RERANKER)
+        # ====================================================
+
+        top = candidates[:final_k]
+
+        results = [
+            {
+                "text": c["text"],
+                "chunk_id": c["chunk_id"],
+                "source": c["source"],
+                "vector_score": float(c["vector_score"]),
+                "bm25_score": float(c["bm25_score"]),
+                "rrf_score": float(c["rrf_score"])
+            }
+            for c in top
+        ]
+
+        t2 = time.time()
+        print(f"[TIMING] Final formatting: {(t2 - t1)*1000:.2f} ms")
+        print(f"[TOTAL TIME]: {(t2 - t0)*1000:.2f} ms")
+
+        best_score = results[0]["rrf_score"] if results else -999
+
+        return results, best_score
     
 rag = RAGPipeline()
 
