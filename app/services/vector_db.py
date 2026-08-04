@@ -85,18 +85,15 @@ class QdrantVectorDB:
         )
 
 
-    def search(
-            
-        self,
-        vector,
-        k=20
-    ):
+    def search(self,vector,k=20 ):
 
-        results = self.client.search(
+        results = self.client.query_points(
             collection_name=self.collection,
-            query_vector=vector.tolist(),
+            query=vector.tolist(),
             limit=k
         )
+       
+
 
 
         return [
@@ -106,7 +103,7 @@ class QdrantVectorDB:
                 "source": r.payload["source"],
                 "vector_score": float(r.score)
             }
-            for r in results
+            for r in results.points
         ]
     
     def collection_exists(self):

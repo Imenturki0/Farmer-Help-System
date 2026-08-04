@@ -1,145 +1,339 @@
 import json
 import os
-from app.services.llm import generate_answer
 import random
-import re
+from collections import defaultdict
+from app.services.llm import generate_answer
 
 
-# -------------------------
-# FILTER GOOD CHUNKS
-# -------------------------
+# =========================
+# FILTER CHUNKS
+# =========================
+
 def is_good_chunk(text):
+
     words = text.split()
 
     if len(words) < 80:
         return False
 
-    if len(words) > 500:
+    if len(words) > 400:
         return False
 
-    alpha_ratio = sum(c.isalpha() for c in text) / max(len(text), 1)
+    alpha_ratio = sum(
+        c.isalpha() for c in text
+    ) / max(len(text),1)
 
-    if alpha_ratio < 0.6:
-        return False
-
-    return True
-
-
-# -------------------------
-# LLM GENERATE QUESTION + ANSWER
-# -------------------------
-def generate_qa(llm, text):
-
-    prompt = f"""
-You are creating evaluation data for a RAG system.
-
-From the text below:
-
-1. Generate ONE factual question.
-2. Generate a short answer.
-3. The answer MUST be taken only from the text.
-4. Do not use outside knowledge.
-
-Return exactly:
-
-QUESTION:
-<question>
-
-ANSWER:
-<answer>
-
-
-TEXT:
-{text}
-"""
-
-    response = llm(prompt).strip()
-
-    # parse output
-    question = ""
-    answer = ""
-
-    if "QUESTION:" in response and "ANSWER:" in response:
-        question_part = response.split("QUESTION:")[1]
-        answer_part = question_part.split("ANSWER:")
-
-        question = answer_part[0].strip()
-        answer = answer_part[1].strip()
-
-    return question, answer
+    return alpha_ratio > 0.6
 
 
 
-# -------------------------
-# BUILD DATASET
-# -------------------------
-def build_dataset(
-        chunks_path="data/processed/chunks.json",
-        llm=None
+# =========================
+# QUESTION TYPE
+# =========================
+
+def classify_question(question):
+
+    q = question.lower()
+
+
+    if any(x in q for x in [
+        "why",
+        "cause",
+        "reason"
+    ]):
+        return "explanation"
+
+
+    if any(x in q for x in [
+        "symptom",
+        "disease",
+        "infection",
+        "pest"
+    ]):
+        return "diagnosis"
+
+
+    if any(x in q for x in [
+        "recommend",
+        "should",
+        "best",
+        "how to"
+    ]):
+        return "recommendation"
+
+
+    return "factual"
+
+
+
+# =========================
+# GROUP CHUNKS
+# =========================
+
+def group_chunks(chunks):
+    
+    groups = defaultdict(list)
+
+    for c in chunks:
+
+        topic = c.get("topic", "general")
+
+
+        # Fix bad LLM outputs
+        if isinstance(topic, list):
+
+            topic = topic[0] if topic else "general"
+
+
+        if "|" in topic:
+            topic = topic.split("|")[0]
+
+
+        topic = topic.strip().lower()
+
+
+        if not topic:
+            topic = "general"
+
+
+        groups[topic].append(c)
+
+
+    return groups
+
+
+# =========================
+# CREATE CONTEXT WINDOWS
+# =========================
+
+def create_context_groups(
+        chunks,
+        size=3
 ):
 
-    chunks = json.load(
-        open(chunks_path, "r", encoding="utf-8")
+    random.shuffle(chunks)
+
+    groups=[]
+
+    for i in range(
+        0,
+        len(chunks)-size+1,
+        size
+    ):
+
+        groups.append(
+            chunks[i:i+size]
+        )
+
+
+    return groups
+
+
+
+# =========================
+# GENERATE QA
+# =========================
+
+def generate_qa(llm, context_chunks, topic):
+
+
+    context = "\n\n".join(
+        [
+            f"""
+CHUNK ID:
+{c['chunk_id']}
+
+TEXT:
+{c['text']}
+"""
+            for c in context_chunks
+        ]
     )
 
 
-    # STEP 1 FILTER
-    good_chunks = [
-        c for c in chunks 
+    prompt=f"""
+
+You are creating evaluation data for a RAG system.
+
+Topic:
+{topic}
+
+
+Use ONLY the provided context.
+
+Create one realistic farmer question that requires
+using information from multiple chunks.
+
+Then provide the answer.
+
+Rules:
+- Question must require combining information.
+- Answer must only use the context.
+- Do not add outside knowledge.
+- Keep answer short.
+
+
+Return:
+
+QUESTION:
+...
+
+ANSWER:
+...
+
+
+CONTEXT:
+
+{context}
+
+"""
+
+
+    response = llm(prompt)
+
+
+    if (
+        "QUESTION:" not in response
+        or
+        "ANSWER:" not in response
+    ):
+        return None,None
+
+
+    q = response.split(
+        "QUESTION:"
+    )[1].split(
+        "ANSWER:"
+    )[0].strip()
+
+
+    a = response.split(
+        "ANSWER:"
+    )[1].strip()
+
+
+    return q,a
+
+
+
+# =========================
+# BUILD DATASET
+# =========================
+
+def build_dataset(
+        chunks_path="data/processed/chunks.json",
+        llm=None,
+        samples_per_topic=20
+):
+
+
+    with open(
+        chunks_path,
+        encoding="utf-8"
+    ) as f:
+
+        chunks=json.load(f)
+
+
+
+    chunks=[
+        c for c in chunks
         if is_good_chunk(c["text"])
     ]
 
 
-    random.seed(42)
-
-    selected_chunks = random.sample(
-        good_chunks,
-        min(100, len(good_chunks))
-    )
+    topic_groups=group_chunks(chunks)
 
 
-    print("\n========== FILTER STATS ==========")
-    print("Total chunks:", len(chunks))
-    print("Good chunks:", len(good_chunks))
-    print("Selected for evaluation:", len(selected_chunks))
+
+    dataset=[]
+
+    idx=0
 
 
-    dataset = []
+    for topic, topic_chunks in topic_groups.items():
 
-
-    # STEP 2 GENERATE QA ONLY HERE
-    for i, c in enumerate(selected_chunks):
 
         print(
-            f"Generating {i+1}/{len(selected_chunks)}"
+            "\nTopic:",
+            topic,
+            "chunks:",
+            len(topic_chunks)
         )
 
 
-        question, answer = generate_qa(
-            llm,
-            c["text"]
+        context_groups=create_context_groups(
+            topic_chunks,
+            size=3
         )
 
 
-        if not question or not answer:
-            continue
+        selected=random.sample(
+            context_groups,
+            min(
+                samples_per_topic,
+                len(context_groups)
+            )
+        )
 
 
-        dataset.append({
+        for group in selected:
 
-            "chunk_id": c["chunk_id"],
 
-            "source": c["source"],
+            print(
+                "Generating",
+                idx
+            )
 
-            # evaluation input
-            "question": question,
 
-            # expected answer
-            "ground_truth": answer,
+            q,a=generate_qa(
+                llm,
+                group,
+                topic
+            )
 
-            # useful for retrieval evaluation
-            "context": c["text"]
-        })
+
+            if not q:
+                continue
+
+
+
+            dataset.append({
+
+                "id":idx,
+
+                "topic":topic,
+
+                "question":q,
+
+                "question_type":
+                    classify_question(q),
+
+                "expected_chunks":
+                    [
+                     c["chunk_id"]
+                     for c in group
+                    ],
+
+                "ground_truth":a,
+
+                "reference_context":
+                    [
+                     c["text"]
+                     for c in group
+                    ],
+
+                "sources":
+                    [
+                     c["source"]
+                     for c in group
+                    ]
+
+            })
+
+
+            idx+=1
+
 
 
     os.makedirs(
@@ -162,14 +356,17 @@ def build_dataset(
         )
 
 
-    print("\n========== FINAL ==========")
-    print("QA pairs:", len(dataset))
-    print("Saved: data/eval/qa_dataset.json")
+    print(
+        "\nCreated QA:",
+        len(dataset)
+    )
 
 
 
-if __name__ == "__main__":
+if __name__=="__main__":
+
 
     build_dataset(
-        llm=generate_answer
+        llm=generate_answer,
+        samples_per_topic=20
     )
