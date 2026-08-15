@@ -1,0 +1,66 @@
+{
+    "fertilizer": {
+        "questions": 20,
+        "correctness": 0.85,
+        "faithfulness": 0.8125,
+        "relevance": 0.775,
+        "lexical_f1": 0.37384621933022266,
+        "latency_ms": 30088.383939955384
+    },
+    "composting": {
+        "questions": 1,
+        "correctness": 1.0,
+        "faithfulness": 1.0,
+        "relevance": 0.75,
+        "lexical_f1": 0.4672897196261682,
+        "latency_ms": 32304.221599828452
+    },
+    "pest": {
+        "questions": 10,
+        "correctness": 0.85,
+        "faithfulness": 0.725,
+        "relevance": 0.9,
+        "lexical_f1": 0.42409497369973337,
+        "latency_ms": 33748.19938996807
+    },
+    "pests": {
+        "questions": 2,
+        "correctness": 1.0,
+        "faithfulness": 1.0,
+        "relevance": 0.75,
+        "lexical_f1": 0.5355616989193265,
+        "latency_ms": 39389.94685001671
+    },
+    "disease": {
+        "questions": 3,
+        "correctness": 0.9166666666666666,
+        "faithfulness": 0.8333333333333334,
+        "relevance": 0.8333333333333334,
+        "lexical_f1": 0.49525310195701255,
+        "latency_ms": 44844.277100016676
+    },
+    "irrigation": {
+        "questions": 1,
+        "correctness": 1.0,
+        "faithfulness": 1.0,
+        "relevance": 0.75,
+        "lexical_f1": 0.5196850393700788,
+        "latency_ms": 58369.41960011609
+    },
+    "harvest": {
+        "questions": 3,
+        "correctness": 0.9166666666666666,
+        "faithfulness": 0.8333333333333334,
+        "relevance": 0.8333333333333334,
+        "lexical_f1": 0.5087531976420866,
+        "latency_ms": 25641.62913329589
+    },
+    "agriculture": {
+        "questions": 1,
+        "correctness": 1.0,
+        "faithfulness": 1.0,
+        "relevance": 0.75,
+        "lexical_f1": 0.6352941176470588,
+        "latency_ms": 20568.764599738643
+    }
+}

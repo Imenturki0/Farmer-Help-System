@@ -306,6 +306,7 @@ Imen Turki
 
 Machine Learning Engineer | Generative AI | RAG Systems
 
+
 ```
 farmer-helper
 ├─ app
@@ -313,11 +314,9 @@ farmer-helper
 │  │  ├─ config.py
 │  │  ├─ memory.py
 │  │  ├─ orchestrator.py
-│  │  ├─ router.py
-│  │  └─ state.py
+│  │  └─ router.py
 │  ├─ eval
 │  │  ├─ build_eval_dataset.py
-│  │  ├─ clustering.py
 │  │  ├─ evaluate_rag.py
 │  │  ├─ generation_eval.py
 │  │  ├─ ragas_eval.py
@@ -328,13 +327,14 @@ farmer-helper
 │  └─ services
 │     ├─ bm25_retriever.py
 │     ├─ llm.py
-│     ├─ prompts.py
 │     ├─ rag.py
 │     ├─ vector_db.py
 │     └─ weather.py
 ├─ data
 │  ├─ eval
 │  │  ├─ generation_results
+│  │  │  ├─ hybrid_details.json
+│  │  │  ├─ hybrid_summary.json
 │  │  │  ├─ without_reranker_details.json
 │  │  │  ├─ without_reranker_summary.json
 │  │  │  ├─ with_reranker_details.json

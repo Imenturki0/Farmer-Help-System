@@ -1,0 +1,30 @@
+{
+    "recommendation": {
+        "questions": 16,
+        "correctness": 0.875,
+        "faithfulness": 0.875,
+        "relevance": 0.8125,
+        "latency_ms": 31652.014712439268
+    },
+    "factual": {
+        "questions": 14,
+        "correctness": 0.8928571428571429,
+        "faithfulness": 0.8214285714285714,
+        "relevance": 0.7678571428571429,
+        "latency_ms": 30660.600092827477
+    },
+    "diagnosis": {
+        "questions": 10,
+        "correctness": 0.85,
+        "faithfulness": 0.7,
+        "relevance": 0.875,
+        "latency_ms": 37389.98008000199
+    },
+    "explanation": {
+        "questions": 1,
+        "correctness": 1.0,
+        "faithfulness": 1.0,
+        "relevance": 0.75,
+        "latency_ms": 31149.253399809822
+    }
+}

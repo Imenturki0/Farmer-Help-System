@@ -1,0 +1,12 @@
+{
+    "correctness": 0.8780487804878049,
+    "faithfulness": 0.8170731707317073,
+    "relevance": 0.8109756097560976,
+    "lexical_f1": 0.4249581779727084,
+    "context_coverage": 0.6936889542781701,
+    "retrieval_hit@5": 0.8780487804878049,
+    "average_retrieval_latency_ms": 81.84873901035,
+    "average_generation_latency_ms": 32618.87542924435,
+    "average_total_latency_ms": 32700.7241682547,
+    "num_questions": 41
+}

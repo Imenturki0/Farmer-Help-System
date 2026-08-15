@@ -1,100 +1,80 @@
 import json
 import time
 import os
+import re
 import numpy as np
+
 from tqdm import tqdm
 
 from app.services.rag import rag
 from app.services.llm import generate_answer
 
 
-# =====================================================
+# ============================================================
 # CONFIG
-# =====================================================
+# ============================================================
 
 DATASET_PATH = "data/eval/qa_dataset.json"
 
 RESULT_DIR = "data/eval/generation_results"
 
+DOC_PATH = "data/processed/chunks.json"
+
+TOP_K = 20
+FINAL_K = 5
+CONTEXT_K = 3
 
 
-# =====================================================
-# LOAD DATASET
-# =====================================================
+# ============================================================
+# DATASET
+# ============================================================
 
-def load_dataset():
+def load_dataset(path=DATASET_PATH):
 
     with open(
-        DATASET_PATH,
+        path,
         encoding="utf-8"
     ) as f:
 
         return json.load(f)
 
 
+# ============================================================
+# PRODUCTION RETRIEVAL
+# ============================================================
 
-# =====================================================
-# RETRIEVAL
-# Hybrid Retrieval WITHOUT Reranker
-# =====================================================
+def retrieve_production(question):
 
+    start = time.perf_counter()
 
-def retrieve_hybrid(
+    results, best_score = rag.search(
         question,
-        k=10,
-        final_k=5
-):
-
-    # Dense retrieval
-    vector_results = rag._vector_search(
-        question,
-        k
+        k=TOP_K,
+        final_k=FINAL_K
     )
 
+    latency_ms = (
+        time.perf_counter() - start
+    ) * 1000
 
-    # Keyword retrieval
-    bm25_results = rag.bm25.search(
-        question,
-        k
-    )
-
-
-    # RRF fusion
-    candidates = rag.rrf_fusion(
-        vector_results,
-        bm25_results
-    )
+    return results, best_score, latency_ms
 
 
-    candidates = sorted(
-        candidates,
-        key=lambda x: x["rrf_score"],
-        reverse=True
-    )
-
-
-    return candidates[:final_k]
-
-
-
-# =====================================================
+# ============================================================
 # CONTEXT
-# =====================================================
-
+# ============================================================
 
 def build_context(results):
 
     return "\n\n".join(
         r["text"]
-        for r in results[:3]
+        for r in results[:CONTEXT_K]
     )
 
 
-
-# =====================================================
-# PROMPT
-# =====================================================
-
+# ============================================================
+# GENERATION PROMPT
+# ============================================================
 
 def build_prompt(
         question,
@@ -102,215 +82,642 @@ def build_prompt(
 ):
 
     return f"""
-
 You are a farming assistant.
 
-Rules:
-- Answer only using the provided context.
-- Do not hallucinate.
-- If the context does not contain the answer, say you don't know.
+Answer the user's question using ONLY the provided context.
 
+Rules:
+- Do not use outside knowledge.
+- Do not invent facts.
+- If the context does not contain enough information, say that you do not have enough information.
+- Give a concise and useful answer.
+- When the context contains a specific quantity, rate, date, or recommendation, preserve it accurately.
 
 Question:
-
 {question}
 
-
 Context:
-
 {context}
 
-
 Answer:
-
 """
 
 
+# ============================================================
+# NORMALIZATION
+# ============================================================
 
-# =====================================================
-# ANSWER METRIC
-# Simple lexical similarity
-# =====================================================
+def normalize_text(text):
+
+    text = text.lower()
+
+    text = re.sub(
+        r"[^a-z0-9\s]",
+        " ",
+        text
+    )
+
+    text = re.sub(
+        r"\s+",
+        " ",
+        text
+    )
+
+    return text.strip()
 
 
-def keyword_score(
+# ============================================================
+# LEXICAL OVERLAP
+# ============================================================
+
+def lexical_f1(
         answer,
         ground_truth
 ):
 
-    answer = answer.lower()
+    answer_tokens = set(
+        normalize_text(answer).split()
+    )
 
-    truth = ground_truth.lower()
+    truth_tokens = set(
+        normalize_text(ground_truth).split()
+    )
 
+    if not answer_tokens or not truth_tokens:
+        return 0.0
 
-    words = truth.split()
+    common = (
+        answer_tokens
+        &
+        truth_tokens
+    )
 
+    precision = len(common) / len(answer_tokens)
 
-    if not words:
-        return 0
+    recall = len(common) / len(truth_tokens)
 
+    if precision + recall == 0:
+        return 0.0
 
-    matched = sum(
-        1
-        for w in words
-        if w in answer
+    return (
+        2 * precision * recall
+        /
+        (precision + recall)
     )
 
 
-    return matched / len(words)
+# ============================================================
+# LLM JUDGE
+# ============================================================
 
-
-
-# =====================================================
-# EVALUATION
-# =====================================================
-
-
-def evaluate(
-        dataset
+def evaluate_with_llm(
+        question,
+        ground_truth,
+        answer,
+        context
 ):
 
+    prompt = f"""
+You are evaluating a RAG-based farming assistant.
 
-    print()
-    print("="*60)
-    print("MODE: hybrid_without_reranker")
-    print("="*60)
+Evaluate the generated answer using ONLY the information
+provided below.
 
+QUESTION:
+{question}
 
-    details=[]
+REFERENCE ANSWER:
+{ground_truth}
 
-    scores=[]
+RETRIEVED CONTEXT:
+{context}
 
-    latencies=[]
+GENERATED ANSWER:
+{answer}
 
+Evaluate three dimensions.
 
+1. CORRECTNESS
+Does the generated answer correctly answer the question
+and agree with the reference answer?
 
-    for item in tqdm(dataset):
+2. FAITHFULNESS
+Are the claims in the generated answer supported by
+the retrieved context?
 
+3. RELEVANCE
+Does the answer directly address the user's question
+without unnecessary information?
 
-        question = item["question"]
+Give each score from 0 to 1.
 
-        ground_truth = item["ground_truth"]
+0 = completely wrong
+0.25 = mostly wrong
+0.5 = partially correct
+0.75 = mostly correct
+1 = fully correct
 
+Return EXACTLY:
 
+CORRECTNESS: <score>
+FAITHFULNESS: <score>
+RELEVANCE: <score>
 
-        start=time.time()
+Do not include any explanation.
+"""
 
+    response = generate_answer(prompt)
 
+    correctness = 0.0
+    faithfulness = 0.0
+    relevance = 0.0
 
-        # -----------------------------
-        # RETRIEVAL
-        # -----------------------------
+    patterns = {
+        "correctness": r"CORRECTNESS:\s*([01](?:\.\d+)?)",
+        "faithfulness": r"FAITHFULNESS:\s*([01](?:\.\d+)?)",
+        "relevance": r"RELEVANCE:\s*([01](?:\.\d+)?)"
+    }
 
-        docs = retrieve_hybrid(
-            question
+    for key, pattern in patterns.items():
+
+        match = re.search(
+            pattern,
+            response,
+            re.IGNORECASE
         )
 
+        if match:
 
-        context = build_context(
-            docs
-        )
-
-
-        # -----------------------------
-        # GENERATION
-        # -----------------------------
-
-        prompt = build_prompt(
-            question,
-            context
-        )
-
-
-        answer = generate_answer(
-            prompt
-        )
-
-
-        latency = (
-            time.time()-start
-        )*1000
-
-
-
-        # -----------------------------
-        # SCORE
-        # -----------------------------
-
-        score = keyword_score(
-            answer,
-            ground_truth
-        )
-
-
-        scores.append(score)
-
-        latencies.append(latency)
-
-
-
-        details.append({
-
-            "question": question,
-
-            "ground_truth": ground_truth,
-
-            "answer": answer,
-
-            "context": context,
-
-
-            "retrieved_chunks":[
-
-                r["chunk_id"]
-
-                for r in docs
-
-            ],
-
-
-            "score": score,
-
-
-            "latency_ms": latency
-
-        })
-
-
-
-    summary={
-
-
-        "answer_score":
-
-            float(
-                np.mean(scores)
-            ),
-
-
-
-        "average_latency_ms":
-
-            float(
-                np.mean(latencies)
+            value = float(
+                match.group(1)
             )
 
+            value = max(
+                0.0,
+                min(1.0, value)
+            )
+
+            if key == "correctness":
+                correctness = value
+
+            elif key == "faithfulness":
+                faithfulness = value
+
+            elif key == "relevance":
+                relevance = value
+
+    return {
+        "correctness": correctness,
+        "faithfulness": faithfulness,
+        "relevance": relevance
     }
 
 
+# ============================================================
+# ANSWER SUPPORT CHECK
+# ============================================================
 
-    return summary, details
+def context_coverage(
+        answer,
+        context
+):
+
+    """
+    Simple additional signal.
+
+    Measures how much of the generated answer's
+    content overlaps with retrieved context.
+
+    This is NOT the main faithfulness metric.
+    """
+
+    answer_words = set(
+        normalize_text(answer).split()
+    )
+
+    context_words = set(
+        normalize_text(context).split()
+    )
+
+    if not answer_words:
+        return 0.0
+
+    return len(
+        answer_words & context_words
+    ) / len(answer_words)
 
 
+# ============================================================
+# SINGLE QUESTION
+# ============================================================
 
-# =====================================================
-# SAVE RESULTS
-# =====================================================
+def evaluate_question(item):
 
+    question = item["question"]
+
+    ground_truth = item["ground_truth"]
+
+    # --------------------------------------------------------
+    # RETRIEVAL
+    # --------------------------------------------------------
+
+    retrieval_start = time.perf_counter()
+
+    results, best_score = rag.search(
+        question,
+        k=TOP_K,
+        final_k=FINAL_K
+    )
+
+    retrieval_latency = (
+        time.perf_counter()
+        -
+        retrieval_start
+    ) * 1000
+
+    # --------------------------------------------------------
+    # CONTEXT
+    # --------------------------------------------------------
+
+    context = build_context(
+        results
+    )
+
+    retrieved_ids = [
+        r["chunk_id"]
+        for r in results
+    ]
+
+    expected_ids = item[
+        "expected_chunks"
+    ]
+
+    # --------------------------------------------------------
+    # GENERATION
+    # --------------------------------------------------------
+
+    prompt = build_prompt(
+        question,
+        context
+    )
+
+    generation_start = time.perf_counter()
+
+    answer = generate_answer(
+        prompt
+    )
+
+    generation_latency = (
+        time.perf_counter()
+        -
+        generation_start
+    ) * 1000
+
+    total_latency = (
+        retrieval_latency
+        +
+        generation_latency
+    )
+
+    # --------------------------------------------------------
+    # METRICS
+    # --------------------------------------------------------
+
+    lexical_score = lexical_f1(
+        answer,
+        ground_truth
+    )
+
+    coverage = context_coverage(
+        answer,
+        context
+    )
+
+    judge_scores = evaluate_with_llm(
+        question,
+        ground_truth,
+        answer,
+        context
+    )
+
+    # --------------------------------------------------------
+    # RETRIEVAL HIT
+    # --------------------------------------------------------
+
+    retrieved_top5 = set(
+        retrieved_ids[:5]
+    )
+
+    expected_set = set(
+        expected_ids
+    )
+
+    hit_at_5 = int(
+        bool(
+            retrieved_top5
+            &
+            expected_set
+        )
+    )
+
+    # --------------------------------------------------------
+    # RESULT
+    # --------------------------------------------------------
+
+    return {
+
+        "id": item.get("id"),
+
+        "topic": item.get(
+            "topic",
+            "unknown"
+        ),
+
+        "question_type": item.get(
+            "question_type",
+            "unknown"
+        ),
+
+        "question": question,
+
+        "ground_truth": ground_truth,
+
+        "answer": answer,
+
+        "expected_chunks": expected_ids,
+
+        "retrieved_chunks": retrieved_ids,
+
+        "correct_retrieved_chunks": list(
+            set(retrieved_ids)
+            &
+            set(expected_ids)
+        ),
+
+        "best_rerank_score": float(
+            best_score
+        ),
+
+        # -------------------------
+        # Answer metrics
+        # -------------------------
+
+        "correctness": judge_scores[
+            "correctness"
+        ],
+
+        "faithfulness": judge_scores[
+            "faithfulness"
+        ],
+
+        "relevance": judge_scores[
+            "relevance"
+        ],
+
+        "lexical_f1": lexical_score,
+
+        "context_coverage": coverage,
+
+        # -------------------------
+        # Retrieval
+        # -------------------------
+
+        "retrieval_hit@5": hit_at_5,
+
+        # -------------------------
+        # Latency
+        # -------------------------
+
+        "retrieval_latency_ms":
+            retrieval_latency,
+
+        "generation_latency_ms":
+            generation_latency,
+
+        "total_latency_ms":
+            total_latency,
+
+        # -------------------------
+        # Context
+        # -------------------------
+
+        "context": context
+    }
+
+
+# ============================================================
+# SUMMARY
+# ============================================================
+
+def calculate_summary(
+        details
+):
+
+    if not details:
+
+        return {}
+
+    def avg(key):
+
+        values = [
+            d[key]
+            for d in details
+        ]
+
+        return float(
+            np.mean(values)
+        )
+
+    summary = {
+
+        # -------------------------
+        # Answer quality
+        # -------------------------
+
+        "correctness":
+            avg("correctness"),
+
+        "faithfulness":
+            avg("faithfulness"),
+
+        "relevance":
+            avg("relevance"),
+
+        "lexical_f1":
+            avg("lexical_f1"),
+
+        "context_coverage":
+            avg("context_coverage"),
+
+        # -------------------------
+        # Retrieval
+        # -------------------------
+
+        "retrieval_hit@5":
+            avg("retrieval_hit@5"),
+
+        # -------------------------
+        # Latency
+        # -------------------------
+
+        "average_retrieval_latency_ms":
+            avg(
+                "retrieval_latency_ms"
+            ),
+
+        "average_generation_latency_ms":
+            avg(
+                "generation_latency_ms"
+            ),
+
+        "average_total_latency_ms":
+            avg(
+                "total_latency_ms"
+            ),
+
+        # -------------------------
+        # Dataset
+        # -------------------------
+
+        "num_questions":
+            len(details)
+    }
+
+    return summary
+
+
+# ============================================================
+# TOPIC BREAKDOWN
+# ============================================================
+
+def calculate_topic_results(
+        details
+):
+
+    topics = {}
+
+    for item in details:
+
+        topic = item.get(
+            "topic",
+            "unknown"
+        )
+
+        if topic not in topics:
+            topics[topic] = []
+
+        topics[topic].append(
+            item
+        )
+
+    results = {}
+
+    for topic, items in topics.items():
+
+        def avg(key):
+
+            return float(
+                np.mean(
+                    [
+                        x[key]
+                        for x in items
+                    ]
+                )
+            )
+
+        results[topic] = {
+
+            "questions":
+                len(items),
+
+            "correctness":
+                avg("correctness"),
+
+            "faithfulness":
+                avg("faithfulness"),
+
+            "relevance":
+                avg("relevance"),
+
+            "lexical_f1":
+                avg("lexical_f1"),
+
+            "latency_ms":
+                avg("total_latency_ms")
+        }
+
+    return results
+
+
+# ============================================================
+# QUESTION TYPE BREAKDOWN
+# ============================================================
+
+def calculate_question_type_results(
+        details
+):
+
+    types = {}
+
+    for item in details:
+
+        question_type = item.get(
+            "question_type",
+            "unknown"
+        )
+
+        if question_type not in types:
+            types[question_type] = []
+
+        types[question_type].append(
+            item
+        )
+
+    results = {}
+
+    for question_type, items in types.items():
+
+        def avg(key):
+
+            return float(
+                np.mean(
+                    [
+                        x[key]
+                        for x in items
+                    ]
+                )
+            )
+
+        results[question_type] = {
+
+            "questions":
+                len(items),
+
+            "correctness":
+                avg("correctness"),
+
+            "faithfulness":
+                avg("faithfulness"),
+
+            "relevance":
+                avg("relevance"),
+
+            "latency_ms":
+                avg("total_latency_ms")
+        }
+
+    return results
+
+
+# ============================================================
+# SAVE
+# ============================================================
 
 def save_results(
         summary,
-        details
+        details,
+        topics,
+        question_types
 ):
 
     os.makedirs(
@@ -318,13 +725,13 @@ def save_results(
         exist_ok=True
     )
 
+    # Main summary
 
     with open(
-        f"{RESULT_DIR}/hybrid_summary.json",
+        f"{RESULT_DIR}/production_summary.json",
         "w",
         encoding="utf-8"
     ) as f:
-
 
         json.dump(
             summary,
@@ -332,14 +739,13 @@ def save_results(
             indent=4
         )
 
-
+    # Per-question results
 
     with open(
-        f"{RESULT_DIR}/hybrid_details.json",
+        f"{RESULT_DIR}/production_details.json",
         "w",
         encoding="utf-8"
     ) as f:
-
 
         json.dump(
             details,
@@ -348,69 +754,217 @@ def save_results(
             ensure_ascii=False
         )
 
+    # Topic results
+
+    with open(
+        f"{RESULT_DIR}/by_topic.json",
+        "w",
+        encoding="utf-8"
+    ) as f:
+
+        json.dump(
+            topics,
+            f,
+            indent=4,
+            ensure_ascii=False
+        )
+
+    # Question type results
+
+    with open(
+        f"{RESULT_DIR}/by_question_type.json",
+        "w",
+        encoding="utf-8"
+    ) as f:
+
+        json.dump(
+            question_types,
+            f,
+            indent=4,
+            ensure_ascii=False
+        )
 
 
-# =====================================================
+# ============================================================
+# PRINT
+# ============================================================
+
+def print_results(
+        summary
+):
+
+    print()
+    print("=" * 70)
+    print("PRODUCTION GENERATION EVALUATION")
+    print("=" * 70)
+
+    print(
+        f"Questions: "
+        f"{summary['num_questions']}"
+    )
+
+    print()
+
+    print(
+        f"Correctness: "
+        f"{summary['correctness']:.4f}"
+    )
+
+    print(
+        f"Faithfulness: "
+        f"{summary['faithfulness']:.4f}"
+    )
+
+    print(
+        f"Relevance: "
+        f"{summary['relevance']:.4f}"
+    )
+
+    print(
+        f"Lexical F1: "
+        f"{summary['lexical_f1']:.4f}"
+    )
+
+    print(
+        f"Context coverage: "
+        f"{summary['context_coverage']:.4f}"
+    )
+
+    print()
+
+    print(
+        f"Retrieval Hit@5: "
+        f"{summary['retrieval_hit@5']:.4f}"
+    )
+
+    print()
+
+    print(
+        f"Retrieval latency: "
+        f"{summary['average_retrieval_latency_ms']:.2f} ms"
+    )
+
+    print(
+        f"Generation latency: "
+        f"{summary['average_generation_latency_ms']:.2f} ms"
+    )
+
+    print(
+        f"Total latency: "
+        f"{summary['average_total_latency_ms']:.2f} ms"
+    )
+
+    print("=" * 70)
+
+
+# ============================================================
 # MAIN
-# =====================================================
+# ============================================================
 
-
-if __name__=="__main__":
-
+if __name__ == "__main__":
 
     dataset = load_dataset()
-
 
     print(
         "Dataset size:",
         len(dataset)
     )
 
-
-    DOC_PATH="data/processed/chunks.json"
-
-
-
-    # Load documents
+    # --------------------------------------------------------
+    # LOAD DOCUMENTS
+    # --------------------------------------------------------
 
     rag.load_docs(
         DOC_PATH
     )
 
-
-    # Load BM25
+    # --------------------------------------------------------
+    # LOAD BM25
+    # --------------------------------------------------------
 
     rag.bm25.load(
         DOC_PATH
     )
 
+    # --------------------------------------------------------
+    # QDRANT
+    # --------------------------------------------------------
 
+    if not rag.vector_db.collection_exists():
 
-    summary,details = evaluate(
-        dataset
+        print(
+            "Building Qdrant collection..."
+        )
+
+        rag.build_index()
+
+    # --------------------------------------------------------
+    # EVALUATE
+    # --------------------------------------------------------
+
+    details = []
+
+    for item in tqdm(
+        dataset,
+        desc="Evaluating answers"
+    ):
+
+        try:
+
+            result = evaluate_question(
+                item
+            )
+
+            details.append(
+                result
+            )
+
+        except Exception as e:
+
+            print(
+                f"\nEvaluation failed for "
+                f"question {item.get('id')}: {e}"
+            )
+
+    # --------------------------------------------------------
+    # SUMMARY
+    # --------------------------------------------------------
+
+    summary = calculate_summary(
+        details
     )
 
-
-
-    print("\nRESULTS")
-    print("-"*40)
-
-
-    print(
-        "Answer score:",
-        summary["answer_score"]
+    topics = calculate_topic_results(
+        details
     )
 
-
-    print(
-        "Average latency:",
-        summary["average_latency_ms"],
-        "ms"
+    question_types = (
+        calculate_question_type_results(
+            details
+        )
     )
 
+    # --------------------------------------------------------
+    # PRINT
+    # --------------------------------------------------------
 
+    print_results(
+        summary
+    )
+
+    # --------------------------------------------------------
+    # SAVE
+    # --------------------------------------------------------
 
     save_results(
         summary,
-        details
+        details,
+        topics,
+        question_types
+    )
+
+    print()
+    print(
+        "Saved results to:",
+        RESULT_DIR
     )
