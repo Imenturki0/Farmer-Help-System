@@ -5,6 +5,7 @@ from typing import Any
 
 from rouge_score import rouge_scorer
 
+from app.services.rag import rag
 from app.services.llm import generate_answer
 
 from app.eval.config import CONFIG
@@ -14,49 +15,34 @@ from app.eval.metrics import (
 )
 
 
-# ============================================================
-# CONTEXT
-# ============================================================
-
 def build_context(
     results: list[dict[str, Any]],
 ) -> list[str]:
 
     return [
         result["text"]
-        for result in results[
-            :CONFIG.context_k
-        ]
+        for result in results[:CONFIG.context_k]
     ]
 
-
-# ============================================================
-# PROMPT
-# ============================================================
 
 def build_prompt(
     question: str,
     contexts: list[str],
 ) -> str:
 
-    context = "\n\n".join(
-        contexts
-    )
+    context = "\n\n".join(contexts)
 
     return f"""
 You are a farming assistant.
 
-Answer the user's question using ONLY
-the provided context.
+Answer the user's question using ONLY the provided context.
 
 Rules:
 - Do not use outside knowledge.
 - Do not invent facts.
-- If the context does not contain enough information,
-  say that you do not have enough information.
+- If the context does not contain enough information, say that you do not have enough information.
 - Give a concise and useful answer.
-- Preserve quantities, rates, dates, units,
-  and recommendations accurately.
+- Preserve quantities, rates, dates, and recommendations accurately.
 
 Question:
 {question}
@@ -68,10 +54,6 @@ Answer:
 """
 
 
-# ============================================================
-# EVALUATE
-# ============================================================
-
 def evaluate_generation(
     item: dict[str, Any],
     retrieval_result: dict[str, Any],
@@ -79,17 +61,16 @@ def evaluate_generation(
 
     question = item["question"]
 
-    ground_truth = item[
-        "ground_truth"
-    ]
+    ground_truth = item["ground_truth"]
 
-    results = retrieval_result[
-        "_results"
-    ]
+    # We need the actual retrieval objects.
+    retrieved_ids = retrieval_result["retrieved_chunks"]
 
-    contexts = build_context(
-        results
-    )
+    # Get actual documents corresponding to retrieved IDs.
+    # The production retriever result is stored by the runner.
+    results = retrieval_result["_results"]
+
+    contexts = build_context(results)
 
     prompt = build_prompt(
         question,
@@ -98,13 +79,10 @@ def evaluate_generation(
 
     start = time.perf_counter()
 
-    answer = generate_answer(
-        prompt
-    )
+    answer = generate_answer(prompt)
 
     latency_ms = (
-        time.perf_counter()
-        - start
+        time.perf_counter() - start
     ) * 1000
 
     scorer = rouge_scorer.RougeScorer(
@@ -119,27 +97,18 @@ def evaluate_generation(
 
     return {
         "id": item["id"],
-
         "question": question,
 
-        "question_type": item.get(
-            "question_type"
-        ),
+        "topic": item.get("topic"),
+        "question_type": item.get("question_type"),
 
         "ground_truth": ground_truth,
-
         "answer": answer,
 
-        "retrieved_chunks":
-            retrieval_result[
-                "retrieved_chunks"
-            ],
-
+        "retrieved_chunks": retrieved_ids,
         "context": contexts,
 
-        "rouge_l": float(
-            rouge_l
-        ),
+        "rouge_l": float(rouge_l),
 
         "token_f1": token_f1(
             answer,
@@ -151,6 +120,5 @@ def evaluate_generation(
             ground_truth,
         ),
 
-        "generation_latency_ms":
-            latency_ms,
+        "generation_latency_ms": latency_ms,
     }

@@ -307,38 +307,56 @@ Imen Turki
 Machine Learning Engineer | Generative AI | RAG Systems
 
 
+
+
 ```
 farmer-helper
+├─ .pytest_cache
+│  ├─ CACHEDIR.TAG
+│  ├─ README.md
+│  └─ v
+│     └─ cache
+│        ├─ lastfailed
+│        └─ nodeids
 ├─ app
+│  ├─ config
+│  │  ├─ prompts.yaml
+│  │  └─ settings.py
 │  ├─ core
+│  │  ├─ citations.py
 │  │  ├─ config.py
+│  │  ├─ logger.py
 │  │  ├─ memory.py
 │  │  ├─ orchestrator.py
+│  │  ├─ orchestrator_old.py
 │  │  └─ router.py
 │  ├─ eval
 │  │  ├─ build_eval_dataset.py
 │  │  ├─ evaluate_rag.py
+│  │  ├─ evaluate_rag_old.py
 │  │  ├─ generation_eval.py
 │  │  ├─ ragas_eval.py
 │  │  ├─ retrieval_eval.py
 │  │  └─ utils.py
 │  ├─ main.py
+│  ├─ main_old.py
+│  ├─ middleware
+│  │  └─ middleware_production.py
 │  ├─ schemas.py
 │  └─ services
 │     ├─ bm25_retriever.py
 │     ├─ llm.py
 │     ├─ rag.py
+│     ├─ rag_old.py
 │     ├─ vector_db.py
 │     └─ weather.py
 ├─ data
 │  ├─ eval
 │  │  ├─ generation_results
-│  │  │  ├─ hybrid_details.json
-│  │  │  ├─ hybrid_summary.json
-│  │  │  ├─ without_reranker_details.json
-│  │  │  ├─ without_reranker_summary.json
-│  │  │  ├─ with_reranker_details.json
-│  │  │  └─ with_reranker_summary.json
+│  │  │  ├─ by_question_type.json
+│  │  │  ├─ by_topic.json
+│  │  │  ├─ production_details.json
+│  │  │  └─ production_summary.json
 │  │  ├─ groups.json
 │  │  ├─ qa_dataset.json
 │  │  └─ results
@@ -349,9 +367,7 @@ farmer-helper
 │  │     ├─ production_queries.json
 │  │     ├─ production_summary.json
 │  │     ├─ qdrant_queries.json
-│  │     ├─ qdrant_summary.json
-│  │     ├─ reranker_queries.json
-│  │     └─ reranker_summary.json
+│  │     └─ qdrant_summary.json
 │  ├─ processed
 │  │  ├─ chunks.json
 │  │  ├─ farming_docs.txt
@@ -381,8 +397,14 @@ farmer-helper
 │  ├─ pipeline.py
 │  ├─ prepare_data.py
 │  └─ watcher.py
+├─ logs
+│  └─ app.json
 ├─ README.md
 ├─ requirements.txt
+├─ scripts
+│  └─ check_quality_gates.py
+├─ tests
+│  └─ test_orchestrator.py
 └─ vector_db
 
 ```

@@ -1,14 +1,12 @@
 import requests
-from app.core.config import (
-    OLLAMA_URL,
-    MODEL_NAME,
-    TEMPERATURE,
-    TOP_K,
-    TOP_P,
-    KEEP_ALIVE
-)
+from app.config.settings import settings
 import json
-
+OLLAMA_URL = settings.llm.model_path
+MODEL_NAME = settings.llm.model_name
+TEMPERATURE = settings.llm.temperature
+TOP_K = settings.llm.top_k
+TOP_P = settings.llm.top_p
+KEEP_ALIVE = settings.llm.keep_alive
 
 def generate_answer(prompt: str):
 

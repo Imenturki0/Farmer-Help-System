@@ -9,3 +9,4 @@ venv/
 
 .DS_Store
 # git rm --cached  venv/  to stop tracking file
+logs/

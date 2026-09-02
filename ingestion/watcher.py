@@ -1,153 +1,224 @@
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
 import time
+from pathlib import Path
 
-from ingestion.pipeline import run_pipeline
+from watchdog.events import (
+    FileSystemEventHandler,
+)
+from watchdog.observers import Observer
+
+from ingestion.ingestion import (
+    run_pipeline,
+)
 
 
-# =========================
+# ============================================================
 # CONFIG
-# =========================
+# ============================================================
 
-WATCH_FOLDER = "data/raw/pdfs"
+WATCH_FOLDER = Path(
+    "data/raw/pdfs"
+)
+
 DEBOUNCE_SECONDS = 5
+STABILITY_CHECKS = 3
+STABILITY_WAIT = 1
 
 
-# =========================
-# GLOBAL STATE (debounce)
-# =========================
+# ============================================================
+# FILE STABILITY
+# ============================================================
 
-last_run_time = 0
-
-
-# =========================
-# RUN PIPELINE SAFELY
-# =========================
-
-def safe_run_pipeline():
+def wait_until_stable(
+    path: Path,
+) -> bool:
     """
-    Prevent multiple rapid triggers.
+    Wait until file size stops changing.
+
+    Prevents processing a PDF while it is
+    still being copied.
     """
 
-    global last_run_time
+    previous_size = -1
 
-    now = time.time()
+    for _ in range(
+        STABILITY_CHECKS
+    ):
 
-    if now - last_run_time < DEBOUNCE_SECONDS:
-        print("[WATCHER] Debounced trigger (ignored)")
-        return
+        if not path.exists():
+            return False
 
-    last_run_time = now
+        current_size = path.stat().st_size
 
-    print("[WATCHER] Running ingestion pipeline...")
+        if current_size == previous_size:
+            return True
 
-    run_pipeline()
+        previous_size = current_size
 
-    print("[WATCHER] Pipeline finished.")
+        time.sleep(
+            STABILITY_WAIT
+        )
+
+    return False
 
 
+# ============================================================
+# WATCHER
+# ============================================================
 
-# =========================
-# EVENT HANDLER
-# =========================
+class PDFWatcher(
+    FileSystemEventHandler
+):
 
-class PDFWatcher(FileSystemEventHandler):
+    def __init__(self):
 
-    def on_created(self, event):
+        super().__init__()
 
-        if not event.is_directory and event.src_path.endswith(".pdf"):
+        self.last_run = 0
+
+    def process_event(
+        self,
+        path: str,
+    ):
+
+        if not path.lower().endswith(
+            ".pdf"
+        ):
+            return
+
+        now = time.time()
+
+        if (
+            now - self.last_run
+            < DEBOUNCE_SECONDS
+        ):
 
             print(
-                f"[WATCHER] New file detected: {event.src_path}"
+                "[WATCHER] Debounced event"
             )
 
-            safe_run_pipeline()
+            return
 
+        self.last_run = now
 
+        pdf = Path(path)
 
-    def on_modified(self, event):
+        print(
+            f"[WATCHER] Detected: "
+            f"{pdf.name}"
+        )
 
-        if not event.is_directory and event.src_path.endswith(".pdf"):
+        if not wait_until_stable(
+            pdf
+        ):
 
             print(
-                f"[WATCHER] File modified: {event.src_path}"
+                "[WATCHER] File is not stable"
             )
 
-            safe_run_pipeline()
+            return
 
+        print(
+            "[WATCHER] Running pipeline..."
+        )
 
+        run_pipeline()
 
-    def on_deleted(self, event):
+        print(
+            "[WATCHER] Pipeline finished"
+        )
 
-        if not event.is_directory and event.src_path.endswith(".pdf"):
+    def on_created(
+        self,
+        event,
+    ):
+
+        if not event.is_directory:
+
+            self.process_event(
+                event.src_path
+            )
+
+    def on_modified(
+        self,
+        event,
+    ):
+
+        if not event.is_directory:
+
+            self.process_event(
+                event.src_path
+            )
+
+    def on_deleted(
+        self,
+        event,
+    ):
+
+        if (
+            not event.is_directory
+            and event.src_path.lower()
+            .endswith(".pdf")
+        ):
 
             print(
-                f"[WATCHER] File deleted: {event.src_path}"
+                f"[WATCHER] Deleted: "
+                f"{event.src_path}"
             )
 
-            safe_run_pipeline()
+            run_pipeline()
 
 
-
-# =========================
+# ============================================================
 # START WATCHER
-# =========================
+# ============================================================
 
 def start_watcher():
 
-    # --------------------------------
-    # Initial synchronization
-    # --------------------------------
-    # Check existing PDFs before watching
+    WATCH_FOLDER.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
 
-    print("[WATCHER] Initial document check...")
+    # Initial synchronization.
+    print(
+        "[WATCHER] Initial synchronization..."
+    )
 
     run_pipeline()
 
-
-    # --------------------------------
-    # Start filesystem monitoring
-    # --------------------------------
-
-    event_handler = PDFWatcher()
+    # Start filesystem watcher.
+    handler = PDFWatcher()
 
     observer = Observer()
 
     observer.schedule(
-        event_handler,
-        WATCH_FOLDER,
-        recursive=False
+        handler,
+        str(WATCH_FOLDER),
+        recursive=False,
     )
 
     observer.start()
 
-
     print(
-        f"[WATCHER] Watching folder: {WATCH_FOLDER}"
+        f"[WATCHER] Watching: "
+        f"{WATCH_FOLDER}"
     )
-
 
     try:
 
         while True:
             time.sleep(1)
 
-
     except KeyboardInterrupt:
 
-        print("[WATCHER] Stopping...")
+        print(
+            "[WATCHER] Stopping..."
+        )
 
         observer.stop()
-
 
     observer.join()
 
 
-
-# =========================
-# ENTRY POINT
-# =========================
-
 if __name__ == "__main__":
-
     start_watcher()
