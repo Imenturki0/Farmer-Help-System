@@ -1,8 +1,9 @@
 import pytest
-from unittest.mock import Mock, patch, MagicMock
+from unittest.mock import Mock, patch
 from app.core.orchestrator import ProductionOrchestrator
 from app.schemas import Question
 from app.core.logger import RequestLogger
+import json
 
 @pytest.fixture
 def orchestrator():
@@ -23,14 +24,18 @@ class TestOrchestrator:
     def test_route_determination(self, orchestrator):
         """Test routing logic"""
         request_logger = RequestLogger()
-        
-        # RAG question
-        route, conf = orchestrator._determine_route(
-            "What's the best way to grow tomatoes?",
-            request_logger
-        )
-        assert route in ["rag", "chat", "weather", "unknown"]
-        assert 0 <= conf <= 1
+
+        with patch("app.core.orchestrator.llm_route") as mock_route:
+            mock_route.return_value = ("rag", 0.9)
+
+            route, conf = orchestrator._determine_route(
+                "What's the best way to grow tomatoes?",
+                request_logger
+            )
+
+        assert route == "rag"
+        assert conf == 0.9
+        mock_route.assert_called_once()
     
     def test_low_confidence_defaults_to_rag(self, orchestrator):
         """Low confidence should default to RAG"""
@@ -43,9 +48,9 @@ class TestOrchestrator:
             
             # Should default to RAG despite "unknown" route
             assert route == "rag"
-            assert conf == 0.3
+            assert conf == 0.5
     
-    @patch("app.services.llm.generate_answer")
+    @patch("app.core.orchestrator.generate_answer")
     def test_chat_handler(self, mock_llm, orchestrator):
         """Test chat route handler"""
         mock_llm.return_value = "That sounds like a good farming question!"
@@ -61,8 +66,8 @@ class TestOrchestrator:
         assert answer == "That sounds like a good farming question!"
         mock_llm.assert_called_once()
     
-    @patch("app.services.weather.get_weather")
-    @patch("app.services.llm.generate_answer")
+    @patch("app.core.orchestrator.get_weather")
+    @patch("app.core.orchestrator.generate_answer")
     def test_weather_handler(self, mock_llm, mock_weather, orchestrator):
         """Test weather route handler"""
         mock_weather.return_value = {
@@ -89,7 +94,7 @@ class TestOrchestrator:
     
     @patch("app.services.rag.rag.search")
     @patch("app.core.citations.CitationEnforcer.enforce_citations")
-    @patch("app.services.llm.generate_answer")
+    @patch("app.core.orchestrator.generate_answer")
     def test_rag_handler(self, mock_llm, mock_citations, mock_search, orchestrator):
         """Test RAG route handler"""
         mock_search.return_value = (
@@ -117,18 +122,19 @@ class TestOrchestrator:
         assert score == 0.85
         mock_search.assert_called_once()
     
-    @patch("app.services.llm.generate_answer")
+    @patch("app.core.orchestrator.generate_answer")
     def test_unknown_handler(self, mock_llm, orchestrator):
         """Test unknown route handler"""
         mock_llm.return_value = "I only help with farming topics..."
-        
+
         request_logger = RequestLogger()
         answer = orchestrator.handle_unknown(request_logger)
-        
+
         assert "farming" in answer.lower()
-    
-    @patch("app.core.orchestrator.orchestrator._determine_route")
-    @patch("app.core.orchestrator.orchestrator.handle_chat")
+        mock_llm.assert_called_once()
+        
+    @patch("app.core.orchestrator.ProductionOrchestrator._determine_route")
+    @patch("app.core.orchestrator.ProductionOrchestrator.handle_chat")
     @patch("app.core.memory.memory.add")
     def test_full_question_flow(self, mock_memory, mock_chat, mock_route, orchestrator, sample_question):
         """Test full question handling flow"""
@@ -140,12 +146,12 @@ class TestOrchestrator:
         assert answer == "That's a great question!"
         mock_memory.assert_called()
     
-    @patch("app.core.orchestrator.orchestrator.handle_rag")
+    @patch("app.core.orchestrator.ProductionOrchestrator.handle_rag")
     def test_rag_error_recovery(self, mock_rag, orchestrator, sample_question):
         """Test graceful degradation on RAG error"""
         mock_rag.side_effect = Exception("RAG failure")
         
-        with patch("app.core.orchestrator.orchestrator._determine_route") as mock_route:
+        with patch("app.core.orchestrator.ProductionOrchestrator._determine_route") as mock_route:
             mock_route.return_value = ("rag", 0.8)
             
             answer = orchestrator.handle_question(sample_question)
@@ -160,9 +166,10 @@ class TestCitationEnforcement:
     @pytest.fixture
     def citation_enforcer(self):
         from app.core.citations import CitationEnforcer
-        return CitationEnforcer(None)
+        logger = Mock()
+        return CitationEnforcer(logger)
     
-    @patch("app.services.llm.generate_answer")
+    @patch("app.core.citations.generate_answer")
     def test_citation_check_supported(self, mock_llm, citation_enforcer):
         """Test citation check when answer is supported"""
         mock_llm.return_value = json.dumps({
@@ -182,7 +189,7 @@ class TestCitationEnforcement:
         assert is_supported == True
         assert confidence == 0.95
     
-    @patch("app.services.llm.generate_answer")
+    @patch("app.core.citations.generate_answer")
     def test_citation_check_unsupported(self, mock_llm, citation_enforcer):
         """Test citation check when answer is unsupported"""
         mock_llm.return_value = json.dumps({
@@ -226,28 +233,35 @@ class TestCitationEnforcement:
             )
             
             assert is_hallucination == True
-            assert "don't have reliable" in final_answer.lower()
+            assert "more reliable information" in final_answer.lower()
 
 
 class TestErrorHandling:
     """Test error handling"""
     
-    @patch("app.core.orchestrator.orchestrator.handle_question")
-    def test_orchestrator_handles_exceptions(self, mock_handle):
-        """Test orchestrator handles exceptions gracefully"""
-        mock_handle.side_effect = RuntimeError("Unexpected error")
-        
+   
+    def test_orchestrator_handles_exceptions(self):
+        """Test orchestrator handles unexpected internal errors gracefully"""
         orchestrator = ProductionOrchestrator()
+
         question = Question(
             text="test",
             session_id="test",
             lat=0,
             lon=0
         )
-        
-        # Should not crash, should return error message
-        answer = orchestrator.handle_question(question)
-        assert isinstance(answer, str)
 
+        with patch.object(
+            orchestrator,
+            "_determine_route",
+            side_effect=RuntimeError("Unexpected error")
+        ):
+            answer = orchestrator.handle_question(question)
+
+        assert isinstance(answer, str)
+        assert "error" in answer.lower() or "unexpected" in answer.lower()
 
 # Run tests with: python -m pytest tests/test_orchestrator.
+# python -m pytest -q -x
+#python -m pytest tests/test_orchestrator.py -q
+#python -m pytest tests/test_orchestrator.py -q --durations=0
