@@ -1,410 +1,817 @@
-# 🌱 Farmer AI Assistant — Production RAG System for Agriculture
+# 🌱 Farmer Helper
 
-## Overview
+### An AI-powered agricultural assistant built around Hybrid RAG, Local LLMs, and Evaluation
 
-Farmer AI Assistant is a Retrieval-Augmented Generation (RAG) system designed to provide reliable agricultural assistance using a private knowledge base.
+Farmer Helper is a production-oriented AI assistant designed to answer agricultural questions using a curated knowledge base of agricultural documents.
 
-The system combines modern AI techniques:
+The project goes beyond a basic RAG chatbot by focusing on the engineering problems that appear when building a more reliable AI system:
 
-* Hybrid information retrieval
-* Vector search
-* Keyword search
-* Neural reranking
-* Local Large Language Models
-* Incremental document ingestion
-
-The goal is to build an AI assistant that can answer farming questions about:
-
-* Crop diseases
-* Fertilizers
-* Soil management
-* Nutrient deficiencies
-* Irrigation
-* Agricultural practices
+**hybrid retrieval, grounded generation, evaluation, checkpointing, streaming, observability, and failure analysis.**
 
 ---
 
-# 🏗️ System Architecture
+## 🎯 Why I Built This
 
-```
-                 User
-                   |
-                   v
+Agricultural information can be scattered across manuals, guides, and technical documents.
 
-              FastAPI API
+The goal of Farmer Helper is to turn this information into an assistant that can:
 
-                   |
-                   v
+* retrieve relevant agricultural knowledge,
+* answer questions using that evidence,
+* avoid unsupported information when the knowledge base is insufficient,
+* provide conversational interactions,
+* and measure its own retrieval and generation quality.
 
-            Orchestrator Layer
+The project started as a simple offline agricultural assistant and evolved into a **production-oriented RAG system**.
 
-        +----------+----------+
-        |                     |
-        v                     v
+---
 
-     Weather              RAG Pipeline
+# 🧠 How It Works
 
-
-                         |
-                         v
-
-              Hybrid Retrieval
-
-          +--------------+--------------+
-          |                             |
-
-       Qdrant                        BM25
-   Vector Search              Keyword Search
-
-
-          \                             /
-
-                   RRF Fusion
-
-                       |
-                       v
-
-              FlashRank Reranker
-
-                       |
-                       v
-
-               Context Selection
-
-                       |
-                       v
-
-              Llama3 (Ollama)
-
-                       |
-                       v
-
-                 Final Answer
+```text
+                         USER
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │   FastAPI   │
+                    │     API     │
+                    └──────┬──────┘
+                           │
+                           ▼
+                    ┌─────────────┐
+                    │    Router   │
+                    └──────┬──────┘
+                           │
+             ┌─────────────┼─────────────┐
+             │             │             │
+             ▼             ▼             ▼
+           CHAT         WEATHER          RAG
+                                         │
+                                         ▼
+                              ┌────────────────────┐
+                              │  Hybrid Retrieval  │
+                              └─────────┬──────────┘
+                                        │
+                         ┌──────────────┴──────────────┐
+                         │                             │
+                         ▼                             ▼
+                    Dense Search                  BM25 Search
+                      Qdrant                       Sparse
+                         │                             │
+                         └──────────────┬──────────────┘
+                                        │
+                                        ▼
+                                  RRF Fusion
+                                        │
+                                        ▼
+                               Top Relevant Chunks
+                                        │
+                                        ▼
+                                  Local LLM
+                                   Ollama
+                                        │
+                                        ▼
+                      ┌─────────────────────────────┐
+                      │   Citation Enforcement      │
+                      │   (Adaptive Threshold)      │
+                      └─────────────────────────────┘
+                                        │
+                                        ▼
+                                  Grounded Answer
 ```
 
 ---
 
-# 🚀 Main Features
+# 🔎 Retrieval Pipeline
 
-## 🔎 Advanced RAG Pipeline
-
-Unlike simple chatbot systems, Farmer AI uses:
+Farmer Helper uses **hybrid retrieval** instead of relying on a single search method.
 
 ### Dense Retrieval
 
-Using:
+Agricultural documents are embedded using:
 
-* BAAI BGE embeddings
-* Qdrant vector database
+```text
+BAAI/bge-base-en-v1.5
+```
+
+and stored in:
+
+```text
+Qdrant
+```
+
+Dense retrieval helps identify information that is semantically related to the user's question.
 
 ### Sparse Retrieval
 
-Using:
+The system also uses:
 
-* BM25 keyword search
-
-### Hybrid Ranking
-
-Combining both approaches using:
-
-* Reciprocal Rank Fusion (RRF)
-
-### Neural Reranking
-
-Using:
-
-* FlashRank reranker
-
-to improve context quality before generation.
-
----
-
-# 📚 Knowledge Ingestion Pipeline
-
-The system supports automatic document updates:
-
-```
-New PDF
-   |
-File Watcher
-   |
-Change Detection
-   |
-PDF Processing
-   |
-Embedding Generation
-   |
-Qdrant Update
+```text
+BM25Okapi
 ```
 
-Features:
+BM25 is particularly useful for exact terminology such as:
 
-* New document detection
-* Modified document detection
-* Deleted document removal
-* Incremental updates
+* crop names,
+* diseases,
+* fertilizer names,
+* measurements,
+* technical terms.
 
----
+### Hybrid Fusion
 
-# 🧠 Local LLM Deployment
+The results from both retrievers are combined using:
 
-The system uses:
-
-* Ollama
-* Llama3
-
-Advantages:
-
-* Private inference
-* No external API dependency
-* Suitable for offline environments
-
----
-
-# 📊 Evaluation Framework
-
-The project includes retrieval and generation evaluation.
-
-Implemented metrics:
-
-### Retrieval
-
-* Recall@K
-* Mean Reciprocal Rank (MRR)
-* Retrieval latency
-
-### Generation
-
-* ROUGE-L
-* Exact Match
-
-Evaluation compares:
-
-* Dense retrieval
-* Hybrid retrieval
-* Reranking approaches
-
----
-
-# 🛠️ Technology Stack
-
-## Backend
-
-* Python
-* FastAPI
-
-## AI
-
-* Sentence Transformers
-* BGE Embeddings
-* FlashRank
-* Llama3
-
-## Databases
-
-* Qdrant Vector Database
-* BM25 Retriever
-
-## Deployment
-
-* Docker
-* Docker Compose
-
----
-
-# 📂 Project Structure
-
+```text
+Reciprocal Rank Fusion (RRF)
 ```
-farmer-helper
 
-├── app
-│   ├── core
-│   │   ├── orchestrator.py
-│   │   ├── router.py
-│   │   └── memory.py
+with:
+
+```text
+k = 60
+```
+
+This allows the system to combine semantic and lexical retrieval signals.
+
+---
+
+# 📚 Document Processing
+
+Agricultural PDFs are processed using **Docling**.
+
+```text
+PDF
+ │
+ ▼
+Docling
+ │
+ ▼
+Structured extraction
+ │
+ ▼
+Structure-aware chunking
+ │
+ ▼
+Metadata
+ │
+ ▼
+Embeddings
+ │
+ ▼
+Qdrant
+```
+
+Current chunking configuration:
+
+| Parameter          |      Value |
+| ------------------ | ---------: |
+| Maximum chunk size | ~250 words |
+| Overlap            |  ~40 words |
+| Minimum text       |  ~10 words |
+
+Chunks contain metadata such as:
+
+```text
+chunk_id
+source
+title
+pages
+section
+```
+
+The ingestion pipeline also tracks file hashes so that changed and removed documents can be synchronized with the index.
+
+---
+
+# 🤖 Local LLM
+
+Farmer Helper uses **Ollama** for local inference.
+
+### Application model
+
+```text
+llama3:latest
+```
+
+Using a local model makes experimentation possible without depending on paid external LLM APIs.
+
+It also gives the project control over:
+
+* model selection,
+* inference parameters,
+* prompts,
+* latency,
+* and the evaluation environment.
+
+---
+
+# 🛡️ Grounded Generation
+
+The RAG generation pipeline is explicitly instructed to answer using the retrieved context.
+
+The model is told to:
+
+* answer the exact question,
+* use only retrieved information,
+* avoid outside knowledge,
+* avoid inventing numbers or recommendations,
+* avoid answering a different question,
+* acknowledge insufficient evidence,
+* mention conflicting information when necessary.
+
+If the retrieved documents do not contain enough information, the assistant can respond:
+
+> "I don't have enough information in the provided sources to answer this."
+
+This makes **grounding** an explicit part of the generation pipeline rather than assuming that retrieval automatically guarantees a correct answer.
+
+---
+
+## 🔐 Citation Enforcement (Adaptive)
+
+**NEW:** Farmer Helper now uses adaptive citation thresholds instead of a fixed threshold.
+
+### The Problem
+
+A fixed citation threshold (0.7) was rejecting valid answers that were well-supported by the context. This caused:
+
+```text
+Correct context retrieved ✓
+Good answer generated ✓
+Citation check → threshold=0.7 ✗
+Result: "I don't have enough information"
+```
+
+### The Solution
+
+Adaptive thresholds based on retrieval confidence:
+
+```python
+if best_score > 0.8:
+    threshold = 0.5   # High confidence retrieval → lenient
+elif best_score > 0.5:
+    threshold = 0.65  # Medium confidence → moderate
+else:
+    threshold = 0.75  # Low confidence → strict
+```
+
+### Impact
+
+* Fewer false rejections of valid answers
+* Better balance between accuracy and coverage
+* More natural conversations
+* Improved evaluation metrics
+
+---
+
+# ⚡ Streaming
+
+The API supports streaming responses.
+
+Instead of waiting for the complete answer:
+
+```text
+Request
+   ↓
+Retrieve
+   ↓
+Generate
+   ↓
+Stream chunks
+   ↓
+Complete response
+```
+
+This is particularly useful when running an LLM locally, where generation can take noticeable time.
+
+---
+
+# 💬 Conversation & Routing
+
+Farmer Helper is not limited to a single RAG endpoint.
+
+Requests can be routed to:
+
+```text
+chat
+weather
+rag
+unknown
+```
+
+The system also maintains bounded conversation history per session.
+
+This allows follow-up questions while preventing conversation history from growing indefinitely.
+
+---
+
+# 🌦️ Weather
+
+The assistant can retrieve weather information and provide it to the LLM as context.
+
+Current weather data includes:
+
+```text
+Temperature
+Wind speed
+```
+
+This creates a second information source outside the agricultural document collection.
+
+---
+
+# 📊 Evaluation
+
+One of the main goals of this project is to **measure the system instead of assuming it works**.
+
+Evaluation is performed at multiple levels.
+
+---
+
+## 🔎 Retrieval Evaluation
+
+Current baseline:
+
+| Metric            |   Result |
+| ----------------- | -------: |
+| Recall@1          |   0.2117 |
+| Recall@3          |   0.3150 |
+| Recall@5          |   0.3767 |
+| Recall@10         |   0.4567 |
+| Hit Rate@5        |   0.7700 |
+| MRR               |   0.6541 |
+| NDCG@5            |   0.4004 |
+| Retrieval latency | ~4.56 ms |
+
+These numbers come from the current evaluation dataset and are treated as a **project baseline**, not as a general benchmark.
+
+The important question is not simply:
+
+> "Is the score good?"
+
+but:
+
+> "What type of failure produced this score?"
+
+---
+
+## 🧪 LLM Evaluation
+
+Generated answers are evaluated using **DeepEval**.
+
+Current metrics:
+
+### Faithfulness
+
+Does the answer remain supported by the retrieved context?
+
+### Answer Relevancy
+
+Does the answer actually address the user's question?
+
+The evaluation uses a separate local judge model:
+
+```text
+qwen2.5:3b
+```
+
+running through Ollama.
+
+### Evaluation Improvements
+
+**NEW:** Enhanced evaluation pipeline with error recovery:
+
+* **Timeout handling** - 60-second timeout per question with graceful degradation
+* **Ollama health checks** - Detects when Ollama crashes and auto-restarts
+* **Cascading failure prevention** - Single bad answer no longer breaks subsequent evaluations
+* **Quality validation** - Skips empty/error answers before evaluation
+* **Checkpointing** - Progress saved after each evaluation (atomic writes)
+
+This ensures that long-running evaluations (100+ questions) complete reliably.
+
+---
+
+## 🔬 Evaluation Architecture
+
+```text
+                  Evaluation Dataset
+                    (Synthetic QA)
+                         │
+                         ▼
+         ┌───────────────────────────────┐
+         │  1. Generate RAG Results      │
+         │  (with checkpoints)           │
+         └───────────────┬───────────────┘
+                         │
+                         ▼
+         ┌───────────────────────────────┐
+         │  2. Validate Generated Answers│
+         │  (skip empty/error)           │
+         └───────────────┬───────────────┘
+                         │
+                         ▼
+         ┌───────────────────────────────┐
+         │  3. Evaluate with DeepEval    │
+         │  (with timeout/recovery)      │
+         └───────────────┬───────────────┘
+                         │
+         ┌───────────────┴────────────┐
+         │                            │
+         ▼                            ▼
+    Faithfulness            Answer Relevancy
+         │                            │
+         └───────────────┬────────────┘
+                         ▼
+                    Evaluation
+                      Results
+```
+
+An important design decision is that **generation and evaluation are separated**.
+
+The application model generates the answer.
+
+A separate model evaluates the answer.
+
+---
+
+# 💾 Checkpointed Evaluation
+
+LLM evaluation can be slow, especially when everything runs locally.
+
+Instead of keeping results only in memory, the evaluation pipeline checkpoints its progress.
+
+```text
+generated_rag_results.json
+faithfulness.json
+answer_relevancy.json
+deepeval_summary.json
+```
+
+This means an interrupted evaluation does not necessarily require starting from zero.
+
+The pipeline also uses:
+
+* **Atomic file writes** - Reduces risk of corrupting checkpoints
+* **Checkpoint recovery** - Resumes from last checkpoint on restart
+* **Per-question checkpointing** - Saves progress after each evaluation
+
+---
+
+# 🧩 Failure Analysis
+
+A major engineering lesson from this project is that **not every bad answer has the same cause**.
+
+### Retrieval failure
+
+```text
+Question
+   ↓
+Incorrect / missing context
+   ↓
+Incorrect answer
+```
+
+### Generation failure
+
+```text
+Question
+   ↓
+Correct context
+   ↓
+LLM
+   ↓
+Incorrect answer
+```
+
+### Citation enforcement failure
+
+```text
+Question
+   ↓
+Correct context retrieved
+   ↓
+Correct answer generated
+   ↓
+Citation threshold too strict
+   ↓
+Answer rejected (false negative)
+```
+
+### Evaluation failure
+
+```text
+Good answer
+   ↓
+LLM Judge
+   ↓
+Incorrect evaluation
+```
+
+This distinction is important.
+
+For example, improving the embedding model will not solve a problem where the correct context was already retrieved but the LLM ignored it.
+
+---
+
+# 🏥 Reliability
+
+The FastAPI application includes:
+
+* Request IDs
+* Request logging
+* Error logging
+* Exception handling
+* Health checks
+* Deep dependency checks
+* Startup/shutdown logging
+* Graceful degradation under load
+
+Endpoints include:
+
+```text
+GET  /health
+GET  /health/deep
+GET  /info
+GET  /metrics
+POST /ask
+POST /ask-stream
+```
+
+---
+
+# 🛠️ Tech Stack
+
+| Area                | Technology             |
+| ------------------- | ---------------------- |
+| Language            | Python                 |
+| API                 | FastAPI                |
+| LLM Runtime         | Ollama                 |
+| Application LLM     | Llama 3                |
+| Evaluation LLM      | Qwen 2.5 3B            |
+| Embeddings          | BAAI/bge-base-en-v1.5  |
+| Vector Database     | Qdrant                 |
+| Sparse Retrieval    | BM25Okapi              |
+| Fusion              | Reciprocal Rank Fusion |
+| Document Processing | Docling                |
+| Evaluation          | DeepEval               |
+| API Documentation   | OpenAPI / Swagger      |
+| Version Control     | Git / GitHub           |
+
+---
+
+# 📁 Project Structure
+
+```text
+farmer-helper/
+│
+├── app/
+│   ├── config/
+│   │   ├── prompts.yaml
+│   │   └── settings.py
 │   │
-│   ├── services
+│   ├── core/
+│   │   ├── citations.py          ← Adaptive threshold
+│   │   ├── logger.py
+│   │   ├── memory.py
+│   │   ├── orchestrator.py       ← Adaptive threshold logic
+│   │   └── router.py
+│   │
+│   ├── eval/
+│   │   ├── config.py
+│   │   ├── build_eval_dataset.py ← Synthetic data generation
+│   │   ├── deepeval_eval.py      ← Timeout/recovery logic
+│   │   ├── retrieval_eval.py
+│   │   ├── runner.py
+│   │   └── dataset.py
+│   │
+│   ├── services/
+│   │   ├── bm25_retriever.py
+│   │   ├── llm.py
 │   │   ├── rag.py
 │   │   ├── vector_db.py
-│   │   ├── llm.py
 │   │   └── weather.py
 │   │
-│   └── eval
-│       ├── evaluate_rag.py
-│       └── evaluate_retrieval.py
+│   └── main.py
 │
-├── ingestion
+├── ingestion/
+│   ├── prepare_data.py
+│   ├── file_state.py
 │   ├── pipeline.py
 │   └── watcher.py
 │
-├── data
+├── data/
+│   ├── raw/
+│   │   └── pdfs/
+│   └── processed/
 │
-├── docker-compose.yml
+├── tests/
+│
+├── .deepeval/
+├── requirements.txt
 └── README.md
 ```
 
 ---
 
-# ⚙️ Running the Project
+# 🚀 Getting Started
 
-## Start infrastructure
+## Requirements
 
-```bash
-docker compose up -d
-```
+* Python 3.10+
+* Ollama
+* Qdrant
 
-## Start Ollama
-
-Install Ollama and run:
+## Clone
 
 ```bash
-ollama pull llama3
+git clone https://github.com/Imenturki0/Farmer-Help-System.git
+
+cd Farmer-Help-System
 ```
 
-## Start API
+## Create environment
+
+### Windows
+
+```bash
+python -m venv .venv
+
+.venv\Scripts\activate
+```
+
+### Linux / macOS
+
+```bash
+python3 -m venv .venv
+
+source .venv/bin/activate
+```
+
+## Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+## Pull the application model
+
+```bash
+ollama pull llama3:latest
+```
+
+## Pull the evaluation model
+
+```bash
+ollama pull qwen2.5:3b
+```
+
+## Start Qdrant
+
+Run Qdrant locally on:
+
+```text
+http://localhost:6333
+```
+
+## Add documents
+
+Place agricultural PDFs inside:
+
+```text
+data/raw/pdfs/
+```
+
+Then run the ingestion pipeline.
+
+## Start the API
 
 ```bash
 uvicorn app.main:app --reload
 ```
 
-API:
+FastAPI will expose the interactive API documentation through its OpenAPI/Swagger interface.
 
+## Run Evaluation
+
+### Build synthetic evaluation dataset
+
+```bash
+python -m app.eval.build_eval_dataset
 ```
-http://localhost:8000
+
+This generates Q&A pairs from your document chunks using LLM-based synthetic data generation with quality validation.
+
+### Run full evaluation pipeline
+
+```bash
+python -m app.eval.runner
 ```
+
+This will:
+1. Generate answers using the RAG system
+2. Evaluate retrieval quality
+3. Evaluate generation quality (faithfulness, relevancy)
+4. Checkpoint progress after each step
+5. Produce evaluation reports
+
+Evaluation typically takes 15-25 minutes for 100 questions depending on LLM speed.
 
 ---
 
-# 🎯 Engineering Highlights
+# ⚠️ Current Limitations
 
-This project demonstrates:
+Farmer Helper is still under active development.
 
-✅ Production-style RAG architecture
-✅ Hybrid retrieval optimization
-✅ Vector database integration
-✅ Local LLM deployment
-✅ Incremental data pipelines
-✅ Retrieval evaluation
-✅ Latency monitoring
-✅ Containerized deployment
+Current limitations include:
 
----
+* Local LLM inference can be slow.
+* Qdrant is currently running locally.
+* BM25 is maintained in memory.
+* Conversation memory is process-local.
+* Authentication and authorization are not implemented.
+* Production deployment infrastructure is not yet implemented.
+* LLM-as-a-judge evaluation has inherent limitations.
+* Retrieval quality still requires improvement.
+* Observability is currently basic.
+* The system has not yet been validated at large scale with real-world users.
 
-# Future Improvements
-
-* RAGAS evaluation
-* Automated CI/CD pipeline
-* Authentication layer
-* Monitoring dashboard
-* Mobile deployment for offline farming assistance
+These limitations are intentionally documented rather than hidden.
 
 ---
 
-# Author
+# 🛣️ Roadmap
 
-Imen Turki
+### Evaluation
 
-Machine Learning Engineer | Generative AI | RAG Systems
+* [x] Retrieval evaluation
+* [x] Faithfulness evaluation
+* [x] Answer relevancy evaluation
+* [x] Evaluation checkpointing
+* [x] Adaptive citation thresholds
+* [x] Evaluation error recovery
+* [ ] Detailed failure analysis
+* [ ] Improve retrieval based on failure patterns
+* [ ] Re-run evaluation after improvements
 
+### Reliability
 
+* [ ] Automated regression tests
+* [ ] Better error handling
+* [ ] Stronger citation verification
+* [ ] Retrieval confidence calibration
+* [ ] More robust session management
 
+### Production
 
-```
-farmer-helper
-├─ .pytest_cache
-│  ├─ CACHEDIR.TAG
-│  ├─ README.md
-│  └─ v
-│     └─ cache
-│        ├─ lastfailed
-│        └─ nodeids
-├─ app
-│  ├─ config
-│  │  ├─ prompts.yaml
-│  │  └─ settings.py
-│  ├─ core
-│  │  ├─ citations.py
-│  │  ├─ config.py
-│  │  ├─ logger.py
-│  │  ├─ memory.py
-│  │  ├─ orchestrator.py
-│  │  ├─ orchestrator_old.py
-│  │  └─ router.py
-│  ├─ eval
-│  │  ├─ build_eval_dataset.py
-│  │  ├─ evaluate_rag.py
-│  │  ├─ evaluate_rag_old.py
-│  │  ├─ generation_eval.py
-│  │  ├─ ragas_eval.py
-│  │  ├─ retrieval_eval.py
-│  │  └─ utils.py
-│  ├─ main.py
-│  ├─ main_old.py
-│  ├─ middleware
-│  │  └─ middleware_production.py
-│  ├─ schemas.py
-│  └─ services
-│     ├─ bm25_retriever.py
-│     ├─ llm.py
-│     ├─ rag.py
-│     ├─ rag_old.py
-│     ├─ vector_db.py
-│     └─ weather.py
-├─ data
-│  ├─ eval
-│  │  ├─ generation_results
-│  │  │  ├─ by_question_type.json
-│  │  │  ├─ by_topic.json
-│  │  │  ├─ production_details.json
-│  │  │  └─ production_summary.json
-│  │  ├─ groups.json
-│  │  ├─ qa_dataset.json
-│  │  └─ results
-│  │     ├─ bm25_queries.json
-│  │     ├─ bm25_summary.json
-│  │     ├─ hybrid_queries.json
-│  │     ├─ hybrid_summary.json
-│  │     ├─ production_queries.json
-│  │     ├─ production_summary.json
-│  │     ├─ qdrant_queries.json
-│  │     └─ qdrant_summary.json
-│  ├─ processed
-│  │  ├─ chunks.json
-│  │  ├─ farming_docs.txt
-│  │  └─ file_state.json
-│  └─ raw
-│     ├─ crops.csv
-│     ├─ fertilizers.csv
-│     ├─ nutrients.csv
-│     ├─ pdfs
-│     │  ├─ 23. Dr Toe Toe Khaing (243-250).pdf
-│     │  ├─ A-Guide-to-Vegetable-Growing---9th-Edition.pdf
-│     │  ├─ Agronomy-Manual.pdf
-│     │  ├─ Application_of_Plant_Fertilizer_Serum_Using_Natura.pdf
-│     │  ├─ compost_factsheet_public.pdf
-│     │  ├─ Fertilizers___Food_Waste_-_Jane_Goodall-s_Roots___Shoots.pdf
-│     │  ├─ IJSRA-2025-0410Article.pdf
-│     │  └─ Liquid-Fertilizer-Recipes-PDF.pdf
-│     ├─ pesticides.csv
-│     └─ temperature.csv
-├─ docker-compose.yml
-├─ dockerfile
-├─ frontend
-│  └─ index.html
-├─ git
-├─ ingestion
-│  ├─ file_state.py
-│  ├─ pipeline.py
-│  ├─ prepare_data.py
-│  └─ watcher.py
-├─ logs
-│  └─ app.json
-├─ README.md
-├─ requirements.txt
-├─ scripts
-│  └─ check_quality_gates.py
-├─ tests
-│  └─ test_orchestrator.py
-└─ vector_db
+* [ ] Dockerize services
+* [ ] Persistent application state
+* [ ] Production Qdrant deployment
+* [ ] Observability and tracing
+* [ ] CI/CD
+* [ ] Load testing
+* [ ] Security hardening
+* [ ] Production deployment
 
-```
+---
+
+# 🧠 Engineering Takeaways
+
+Building Farmer Helper taught me that making a RAG system **work** is only the beginning.
+
+Some of the practical problems encountered during development were:
+
+* Retrieval quality cannot be assumed from a working vector database.
+* Hybrid retrieval needs measurable evaluation.
+* RRF scores are ranking signals, not probability values.
+* Retrieving the correct context does not guarantee a correct answer.
+* Fixed citation thresholds can reject valid answers (false negatives).
+* Adaptive thresholds based on retrieval confidence improve balance.
+* LLM judges can also produce unreliable evaluations.
+* Local LLM evaluation can become a significant latency bottleneck.
+* Long-running evaluation requires checkpointing and recovery.
+* Evaluation should follow the same generation path as the production application.
+* Streaming changes how latency and generation are handled.
+* Observability is essential for understanding failures.
+
+The project is therefore being developed as an **evaluated and production-oriented AI system**, rather than simply a chatbot demo.
+
+---
+
+# 👩‍💻 About
+
+**Imen Turki**
+
+Machine Learning Engineer | AI / LLM / GenAI
+
+Focus:
+
+`RAG` · `LLMs` · `NLP` · `Hybrid Retrieval` · `AI Evaluation` · `Python` · `FastAPI`
+
+### Links
+
+**GitHub:**
+https://github.com/Imenturki0/Farmer-Help-System
+
+**Portfolio:**
+https://imenturki0.github.io/My-Portfolio
